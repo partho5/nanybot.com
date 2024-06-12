@@ -1,0 +1,28 @@
+# Ignore node_modules/ if you're using a package manager like npm or yarn
+node_modules/
+
+# Ignore build/ or dist/ directories if you're using a build tool or bundler
+dist/
+build/
+
+# Ignore .env file if you're storing environment variables
+.env
+
+# Ignore log files and databases
+*.log
+*.sqlite3
+
+# Ignore temporary files
+*.tmp
+*.temp
+
+# Ignore OS-specific files
+.DS_Store
+Thumbs.db
+
+# Ignore IDE-specific files
+.vscode/
+.idea/
+
+# Ignore assets/images directory
+/assets/images/*

@@ -1,0 +1,727 @@
+
+
+
+.underln{
+    border-bottom: 1px solid #000;
+}
+.underln-red{
+    border-bottom: 2px solid #f00;
+}
+.underln-green{
+    border-bottom: 2px solid #00cd00;
+}
+
+
+nav#header{
+    opacity: 0.98;
+}
+
+.brand{
+    color: #000;
+}
+.brand img.logo{
+    border-radius: 50%;
+}
+
+.gradient{
+    background:
+            radial-gradient(
+                    farthest-side at bottom left,
+                    rgba(192, 255, 255, 0.9),
+                    transparent
+            ),
+            radial-gradient(
+                    farthest-corner at bottom right,
+                    rgba(255, 227, 253, 0.32),
+                    transparent
+            );
+}
+
+.hero{
+    //background-image: url("../images/wave-both.jpg");
+}
+.hero::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%; /* Adjust according to your needs */
+    height: 100%; /* Adjust according to your needs */
+    background: linear-gradient(
+            to right,
+            rgba(227, 252, 255, 0.9) 0%,
+            rgba(255,255,255,0.9) 20%,
+            rgba(255, 246, 254, 0.8) 100%
+    ), url("../images/wave-both.jpg") center/cover;
+
+    opacity: 0.7; /* Adjust opacity as needed */
+    z-index: -1; /* Ensure the pseudo-element is behind the content */
+}
+
+
+.hero h1{
+    color: blue;
+}
+
+#leftCol{
+    text-align: center;
+}
+
+.animate-left {
+    animation: slideInLeft 1s ease-in-out;
+}
+.animate-left-3x {
+    animation: slideInLeft 0.33s ease-in-out;
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-50%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+
+#heroImage{
+    //opacity: 0;
+    transition: opacity 2s ease-in-out; /* Transition effect for opacity */
+    max-width: 600px;
+    min-width: 600px;
+    max-height: 500px;
+    min-height: 500px;
+}
+
+
+/* Media query for mobile devices (up to 768px) */
+@media only screen and (max-width: 768px) {
+    #heroImage{
+        max-width: 100%;
+        min-width: 100%;
+        max-height: 100%;
+        min-height: 100%;
+    }
+    .rotating-object-container{
+        visibility: hidden;
+    }
+}
+
+/* used in js */
+.fade-in {
+    animation: fadeIn 3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    0%, 100% {
+        opacity: 0;
+    }
+    50% {
+        opacity: 1;
+    }
+}
+
+
+
+
+
+/* Keyframes for typing animation */
+@keyframes typing {
+    from {
+        width: 0;
+    }
+    to {
+        width: 100%;
+    }
+}
+
+/* Apply typing animation to span */
+.typing-text::after {
+    content: "|";
+    animation: typing 2s steps(40) infinite;
+}
+
+/* Hide cursor after animation */
+.typing-text::after {
+    content: "";
+    animation: none;
+}
+
+
+#nav-content li a:hover{
+    background-color: #000000;
+    color: #ffffff;
+    transition: 0.1s ease-in-out;
+}
+
+
+
+
+
+
+
+.rotating-text {
+    position: absolute;
+    bottom: 5em;
+    left: 50%;
+    transform: translateX(-50%);
+    animation: rotateText 20s linear infinite;
+}
+
+@keyframes rotateText {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+
+
+.rotating-object-container {
+    position: absolute;
+    bottom: 6em;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+
+    opacity: 0; /* Start with opacity 0 */
+    animation: fadeIn 1s ease-in forwards; /* 1s duration */
+    animation-delay: 3s;
+}
+
+.rotating-object img {
+    position: relative;
+    width: 100px;
+    height: auto;
+    max-width: 100px;
+    max-height: 100px;
+    min-width: 100px;
+    min-height: 100px;
+
+    //border: 1px solid red;
+    margin: 0 1em; /* Adjust spacing between images as needed */
+    animation: rotateX 2s ease-in-out infinite;
+}
+
+
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+
+
+/* Rotation around itself along the X-axis */
+@keyframes rotateX {
+    0% {
+        transform: rotateX(0deg);
+    }
+    100% {
+        transform: rotateX(360deg);
+    }
+}
+
+/* Somersault */
+@keyframes somersault {
+    0% {
+        transform: rotateY(0deg);
+    }
+    100% {
+        transform: rotateY(360deg);
+    }
+}
+
+/* Bounce effect */
+@keyframes bounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-50px);
+    }
+}
+@keyframes moveX {
+    0% {
+        left: 0;
+    }
+    100% {
+        left: 100em;
+    }
+}
+/* Combined animation */
+@keyframes rotateAndMove {
+    0% {
+        transform: rotateX(0deg) translateX(0);
+    }
+    50% {
+        transform: rotateX(360deg) translateX(40em);
+    }
+    100% {
+        transform: rotateX(0deg) translateX(0);
+    }
+}
+
+
+/* Applying animations to respective rotating objects */
+.rotating-object:nth-of-type(1) img {
+    animation: bounce 4s linear infinite;
+}
+
+.rotating-object:nth-of-type(2) img {
+    animation: bounce 3s linear infinite;
+}
+
+.rotating-object:nth-of-type(3) img {
+    animation: bounce 2s ease-in-out infinite;
+}
+
+
+
+
+/* Fonts */
+
+
+.sans-pro-regular{
+    font-family: 'Source Sans Pro', sans-serif;
+}
+
+.tomorrow-thin {
+    font-family: "Tomorrow", sans-serif;
+    font-weight: 100;
+    font-style: normal;
+}
+
+.tomorrow-extralight {
+    font-family: "Tomorrow", sans-serif;
+    font-weight: 200;
+    font-style: normal;
+}
+
+.tomorrow-light {
+    font-family: "Tomorrow", sans-serif;
+    font-weight: 300;
+    font-style: normal;
+}
+
+.tomorrow-regular {
+    font-family: "Tomorrow", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
+.tomorrow-medium {
+    font-family: "Tomorrow", sans-serif;
+    font-weight: 500;
+    font-style: normal;
+}
+
+.tomorrow-semibold {
+    font-family: "Tomorrow", sans-serif;
+    font-weight: 600;
+    font-style: normal;
+}
+
+.tomorrow-bold {
+    font-family: "Tomorrow", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+}
+
+.tomorrow-extrabold {
+    font-family: "Tomorrow", sans-serif;
+    font-weight: 800;
+    font-style: normal;
+}
+
+.tomorrow-black {
+    font-family: "Tomorrow", sans-serif;
+    font-weight: 900;
+    font-style: normal;
+}
+
+.tomorrow-thin-italic {
+    font-family: "Tomorrow", sans-serif;
+    font-weight: 100;
+    font-style: italic;
+}
+
+.tomorrow-extralight-italic {
+    font-family: "Tomorrow", sans-serif;
+    font-weight: 200;
+    font-style: italic;
+}
+
+.tomorrow-light-italic {
+    font-family: "Tomorrow", sans-serif;
+    font-weight: 300;
+    font-style: italic;
+}
+
+.tomorrow-regular-italic {
+    font-family: "Tomorrow", sans-serif;
+    font-weight: 400;
+    font-style: italic;
+}
+
+.tomorrow-medium {
+    font-family: "Tomorrow", sans-serif;
+    font-weight: 500;
+}
+
+.font-tomorrow-semibold-italic {
+    font-family: "Tomorrow", sans-serif;
+    font-weight: 600;
+    font-style: italic;
+}
+
+/*.tomorrow-bold-italic {*/
+    /*font-family: "Tomorrow", sans-serif;*/
+    /*font-weight: 700;*/
+    /*font-style: italic;*/
+/*}*/
+
+/*.tomorrow-extrabold-italic {*/
+    /*font-family: "Tomorrow", sans-serif;*/
+    /*font-weight: 800;*/
+    /*font-style: italic;*/
+/*}*/
+
+/*.tomorrow-black-italic {*/
+    /*font-family: "Tomorrow", sans-serif;*/
+    /*font-weight: 900;*/
+    /*font-style: italic;*/
+/*}*/
+
+
+
+
+
+section h2 {
+    margin-top: 1.5em !important;
+    font-family: 'Source Sans Pro', sans-serif;
+    font-weight: 700;
+}
+
+
+/******* #services *******/
+#services {
+    background-color: rgba(244, 252, 255, 0.8);
+    padding-bottom: 8em;
+}
+
+/* Styling for service-box */
+.service-box {
+    display: block;
+    position: relative;
+    transition: shadow 0.3s ease-in-out;
+}
+
+.service-box h3 {
+    color: #0000ff;
+    font-family: Bahnschrift, serif;
+    font-size: 1.5em; /* Slightly increased for better readability */
+    margin-bottom: 1rem; /* Adequate spacing below the heading */
+}
+
+.service-box .description {
+    color: #4a4a4a; /* Darker gray for better readability */
+    font-size: 1em;
+    margin-bottom: 1rem;
+}
+
+#services .service-box .cta {
+    border: 1px solid #000;
+    //background: linear-gradient(to right, #e1f7f9, #fbdfff);
+    background-color: #000;
+    padding: 0.5em 1em;
+    color: #fff;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color 0.1s ease-in-out,
+        border-radius 0.1s ease-in-out,
+        position 0.1s ease-in-out;
+}
+
+#services .service-box .cta:hover {
+    background-color: blue;
+    border-radius: 5px;
+    position: relative;
+    top: 1px;
+    box-shadow: rgb(38, 57, 77) 0px 20px 30px -10px;
+}
+.service-box .image-container {
+    width: 100%;
+    height: 250px; /* Fixed height for images */
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 0.5em;
+}
+.service-box .image-container img {
+    max-width: 100%;
+    max-height: 100%;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensure images cover the container without distortion */
+}
+
+.service-box img {
+    display: inline-block;
+    transform-origin: center center;
+    max-width: 100%;
+    max-height: 100%;
+    border-radius: 0.5em; /* Rounded corners for images */
+    transition: transform 0.3s;
+}
+
+.service-box img:hover {
+    background: linear-gradient(-45deg, #feefff, #f1f8ff);
+    border-color: #eee;
+    transform: scale(1.2);
+}
+
+
+
+
+
+
+/* ****** Solution ******* */
+/* Base animation setup with solution prefix */
+@keyframes solutionFadeIn {
+    from {
+        opacity: 0.3;
+        transform: translateY(100px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes solutionSlideInLeft {
+    from {
+        opacity: 0.3;
+        transform: translateX(-100px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes solutionSlideInRight {
+    from {
+        opacity: 0.3;
+        transform: translateX(100px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Initial state */
+#solution{
+    min-height: 100vh;
+
+    background:
+            radial-gradient(
+                    farthest-side at bottom left,
+                    rgb(255, 254, 236),
+                    transparent
+            ),
+            radial-gradient(
+                    farthest-side at bottom left,
+                    rgb(253, 255, 248),
+                    transparent
+            ),
+            radial-gradient(
+                    farthest-corner at bottom right,
+                    rgb(225, 255, 255),
+                    transparent 400px
+            );
+}
+#solution,
+#solution .flex-wrap > div:nth-child(odd) .p-6 > div,
+#solution .flex-wrap > div:nth-child(even) .p-6 > div,
+#solution .flex-wrap > div:nth-child(odd) img,
+#solution .flex-wrap > div:nth-child(even) img {
+    opacity: 0.1;
+    transform: translateY(100px);
+}
+
+/* Animation classes */
+.fade-in {
+    animation: solutionFadeIn 1s ease-in-out forwards;
+}
+
+.slide-in-left {
+    animation: solutionSlideInLeft 1s ease-in-out forwards;
+}
+
+.slide-in-right {
+    animation: solutionSlideInRight 1s ease-in-out forwards;
+}
+
+/* Hover effect for images */
+#solution img {
+    transition: transform 0.3s ease;
+}
+
+#solution img:hover {
+    transform: scale(1.05);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+/********* services section **********/
+/* Define keyframes for scaling in the services section */
+@keyframes servicesScaleUp {
+    from {
+        transform: scale(0.8);
+        opacity: 0.2;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Show service boxes when they come into viewport */
+.service-box.in-viewport {
+    animation: servicesScaleUp 1.5s forwards; /* Animation duration and fill mode */
+}
+
+
+
+
+#pricing{
+    background: linear-gradient(to bottom, #e1fdff, #ffe0ff);
+}
+#pricing .payment-model .description{
+    background-color: #000;
+    color: #fff;
+    padding: 3px 20px;
+    border-radius: 15px;
+}
+#pricing .offer-msg{
+    color: #000;
+    font-size: 1.3em;
+    margin-bottom: 2em;
+}
+#pricing .package-name{
+    border-bottom: 2px solid #ccc;
+}
+#pricing .package-basic{
+    background-color: #feffe5;
+    border-bottom: 2px solid #ccc;
+}
+#pricing .package-pro{
+    background-color: #ff7700;
+    border-bottom: 2px solid #d56400;
+    color: #fff;
+}
+#pricing .package-enterprise{
+    background-color: rgba(251, 209, 255, 0.76);
+    border-bottom: 2px solid #d9a8d8;
+}
+#pricing .package-details{
+    color: blue;
+    text-decoration: underline;
+}
+#pricing .package-details:hover{
+    color: #ec00ec;
+}
+
+.glass-effect{
+    position: relative;
+}
+.glass-content {
+    content: '';
+    position: absolute;
+    bottom: 0em;
+    left: 0em;
+    opacity: 0.5;
+    height: 250px;
+    width: 100%;
+    background: linear-gradient(45deg, #ffffff00 40%, #d0ffff 50%, #ffffff00 60%);
+    background-position-x: -100%;
+}
+
+.animate{
+    transform: rotate(45deg);
+    animation: glassEffectSlideUp 0.4s linear forwards;
+    //animation-iteration-count: 2;
+}
+
+@keyframes glassEffectSlideUp {
+    0% {
+        left: -10em;
+        bottom: 5em;
+        transform: translateY(100%);
+    }
+    99% {
+        transform: translateY(-200%);
+    }
+    100%{
+        left: 10em;
+        bottom: 10em;
+        display: none;
+    }
+}
+
+
+
+/* animated background gradient */
+#pricing-tmp {
+    background: linear-gradient(-45deg, #e1fdff, rgba(252, 228, 255, 0.8), #e1fdff, rgba(253, 209, 255, 0.7));
+    background-size: 400% 400%;
+    animation: bgGradientAnimate 7s ease infinite;
+    height: 100vh;
+}
+
+@keyframes bgGradientAnimate {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+
+
+
+#discord-link{
+    color: blue;
+}
+#discord-link:hover{
+    text-decoration: underline;
+}
+
+footer{
+    background-color: rgb(255, 255, 255);
+    border-top: 1px solid rgba(227, 238, 240, 0.4);
+}
