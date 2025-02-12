@@ -1,524 +1,529 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>
-      Nany Bot
-    </title>
-    <meta name="description" content="Simple landind page" />
-    <meta name="keywords" content="" />
-    <meta name="author" content="" />
-    <link rel="stylesheet" href="https://unpkg.com/tailwindcss@2.2.19/dist/tailwind.min.css"/>
-
-
-    <!--<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700" rel="stylesheet" />-->
-    <!--<link href="https://fonts.googleapis.com/css2?family=Tomorrow:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">-->
-
-    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700|Tomorrow:ital,wght@0,100;0,600;0,700;0,600;1,700;1&display=swap" rel="stylesheet">
-
-
-
-    <link rel="stylesheet" href="https://nanybot-landing.s3.us-west-1.amazonaws.com/assets/css/index.css">
-    <script type="application/ecmascript" src="https://nanybot-landing.s3.us-west-1.amazonaws.com/assets/js/index.js"></script>
-
-  </head>
-
-  <body class="leading-normal tracking-normal  gradient">
-    <!--Nav-->
-    <nav id="header" class="fixed w-full z-30 top-0 text-black">
-      <div class="w-full container mx-auto flex flex-wrap items-center justify-between mt-0 py-2">
-        <!-- Logo and brand name -->
-        <a href="" class="brand flex items-center flex-shrink-0 mr-6">
-          <img loading="lazy" src="https://nanybot-landing.s3.us-west-1.amazonaws.com/assets/images/nanybot.jpeg" alt="Logo" class="logo w-10 mr-2">
-          <span class="toggleColour no-underline hover:no-underline font-bold text-2xl lg:text-4xl">Nany Bot</span>
-        </a>
-
-        <div class="block lg:hidden pr-4">
-          <button id="nav-toggle" class="flex items-center p-1 text-pink-800 hover:text-gray-900 focus:outline-none focus:shadow-outline transform transition hover:scale-105 duration-300 ease-in-out">
-            <svg class="fill-current h-6 w-6" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-              <title>Menu</title>
-              <path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z" />
-            </svg>
-          </button>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CreativeStudio | Content Creation Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <style>
+        /* Additional custom styles */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg fixed w-full z-50">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <span class="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-500 text-transparent bg-clip-text">Nany Bot</span>
+                </div>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#features" class="scrollable text-gray-700 hover:text-purple-600 font-medium">Features</a>
+                    <a href="#pricing" class="scrollable text-gray-700 hover:text-purple-600 font-medium">Pricing</a>
+                    <a href="#testimonials" class="hidden text-gray-700 hover:text-purple-600 font-medium">Testimonials</a>
+                    <a href="https://article.nanybot.com">
+                        <button class="bg-purple-600 text-white px-6 py-2 rounded-full hover:bg-purple-700 transform hover:scale-105 transition duration-200 ease-in-out font-medium">
+                            Get Started
+                        </button>
+                    </a>
+                </div>
+            </div>
         </div>
-
-        <div class="w-full flex-grow lg:flex lg:items-center lg:w-auto hidden mt-2 lg:mt-0 bg-white lg:bg-transparent text-black p-4 lg:p-0 z-20" id="nav-content">
-          <ul class="list-reset lg:flex justify-end flex-1 items-center">
-            <li class="mr-3">
-              <a class="menu-link scrollable inline-block py-4 px-4 text-black  no-underline" href="#home">Home</a>
-            </li>
-            <li class="mr-3">
-              <a class="menu-link scrollable inline-block py-4 px-4 text-black  no-underline" href="#solution">Solution</a>
-            </li>
-            <li class="mr-3 hidden">
-              <a class="menu-link scrollable inline-block py-4 px-4 text-black  no-underline" href="#services">Services</a>
-            </li>
-            <li class="mr-3">
-              <a class="menu-link scrollable inline-block py-4 px-4 text-black  no-underline" href="#pricing">Pricing</a>
-            </li>
-            <li class="mr-3 hidden">
-              <a class="menu-link inline-block py-4 px-4 text-black  no-underline" href="/blog" target="_blank">Blog</a>
-            </li>
-            <li class="mr-3 hidden">
-              <a class="menu-link inline-block py-4 px-4 text-black  no-underline" href="/career" target="_blank">Career</a>
-            </li>
-            <li class="mr-3">
-              <a class="menu-link scrollable inline-block py-4 px-4 text-black  no-underline" href="#contact">Contact</a>
-            </li>
-          </ul>
-          <button id="navAction" class="hidden mx-auto lg:mx-0 bg-white text-gray-800 font-bold rounded-full border border-transparent hover:border hover:border-blue-800  hover:text-blue-800 mt-4 lg:mt-0 py-3 px-8 shadow opacity-75 focus:outline-none focus:shadow-outline transform transition duration-300 ease-in-out">Contact</button>
-
-
-        </div>
-
-      </div>
-      <hr class="border-b border-gray-100 opacity-25 my-0 py-0" />
     </nav>
 
-
-    <!--Hero-->
-    <section id="home" class="pt-24 hero sans-pro-regular" style="min-height: 100vh">
-      <div class="container px-3 mx-auto flex flex-wrap flex-col md:flex-row items-center">
-        <!--Left Col-->
-        <div id="leftCol" class="flex flex-col w-full md:w-2/5 justify-center items-center text-center"> <!-- Updated class attributes -->
-          <div class="msg1 text-4xl">Automate customer support with</div>
-          <h1 id="animatedText" class="animate-left-to-right my-4 text-5xl md:text-5xl lg:text-7xl  font-tomorrow-semibold-italic  leading-tight text-black">
-            AI driven bots
-          </h1>
-
-          <!-- <p class="leading-normal animate-left-to-right text-3xl my-8">
-            Minimize business hours ↝ Maximize profit
-          </p> -->
-          <button id="exploreBtn" class="animate-left-to-right mx-auto lg:mx-0 bg-white text-2xl text-gray-800 font-bold rounded-full my-6 py-3 px-8 shadow-lg focus:outline-none focus:shadow-outline transform transition hover:scale-105 duration-300 ease-in-out border-2 border-transparent hover:border-black">
-            Explore
-          </button>
+    <!-- Hero Section -->
+    <section class="pt-28 lg:pt-36 overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex flex-col lg:flex-row items-center justify-between">
+                <div class="lg:w-1/2 mb-12 lg:mb-0">
+                    <h1 class="text-5xl lg:text-6xl font-bold leading-tight mb-6">
+                        Create Content <br/>
+                        <span class="bg-gradient-to-r from-purple-600 to-blue-500 text-transparent bg-clip-text">Like Magic</span>
+                    </h1>
+                    <p class="text-xl text-gray-600 mb-8 leading-relaxed">
+                        High-quality articles in 1 click.<br>SEO optimized ↝ effortless and auto-publish!
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <a href="https://article.nanybot.com">
+                            <button class="bg-purple-600 text-white px-8 py-4 rounded-full hover:bg-purple-700 transform hover:scale-105 transition duration-200 ease-in-out font-medium text-lg">Start Creating Now</button>
+                        </a>
+                        <a class="hidden" href="https://youtu.be/ZhOeX7Dx6z0" target="_blank">
+                            <button class="border-2 border-purple-600 text-purple-600 px-8 py-4 rounded-full hover:bg-purple-50 transform hover:scale-105 transition duration-200 ease-in-out font-medium text-lg">How it works?</button>
+                        </a>
+                    </div>
+                </div>
+                <div class="lg:w-1/2 relative">
+                    <div class="relative z-10 bg-gradient-to-r from-purple-100 to-blue-100 rounded-2xl p-2">
+                        <img src="https://nanybot-landing.s3.us-west-1.amazonaws.com/assets/images/bot-computer.png" alt="Platform Preview" class="rounded-xl shadow-2xl transform hover:scale-105 transition duration-500 ease-in-out"/>
+                    </div>
+                    <div class="absolute top-0 right-0 w-72 h-72 bg-purple-200 rounded-full filter blur-3xl opacity-50 -z-10"></div>
+                    <div class="absolute bottom-0 left-0 w-72 h-72 bg-blue-200 rounded-full filter blur-3xl opacity-50 -z-10"></div>
+                </div>
+            </div>
         </div>
-        <!--Right Col-->
-        <div id="rightCol" class="home-img-wrapper w-full md:w-3/5 py-6 text-center flex justify-center items-center">
-          <img loading="lazy" class="w-full md:w-4/5 " src="https://nanybot-landing.s3.us-west-1.amazonaws.com/assets/images/ask-me-bot.png" id="heroImage" />
-        </div>
+    </section>
 
-      </div>
+    <!-- Features Section -->
+    <section id="features" class="py-20 mt-20 bg-gradient-to-b from-white to-gray-50">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="text-center mb-20">
+                <h2 class="text-4xl font-bold text-red-500 mb-4">Your Every Click Publishes an Article</h2>
+                <p class="text-xl text-gray-600"><strong>Quality</strong> article, <strong>Information</strong>-rich, <strong>SEO</strong> ready</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- High-Quality Articles -->
+                <div class="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition duration-300 ease-in-out transform hover:-translate-y-1">
+                    <div class="w-14 h-14 bg-purple-100 rounded-lg flex items-center justify-center mb-6">
+                        <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-4">High-Quality Articles</h3>
+                    <ul class="text-gray-600 space-y-2">
+                        <li class="flex items-start"><span class="mr-2">⭐</span>Professionally written, long-form content (2500–3500 words)</li>
+                        <li class="flex items-start"><span class="mr-2">⭐</span>Engaging and packed with value</li>
+                        <li class="flex items-start"><span class="mr-2">⭐</span>Zero fluff, adhering to Google's E-E-A-T guidelines</li>
+                    </ul>
+                </div>
 
+                <!-- SEO Optimized -->
+                <div class="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition duration-300 ease-in-out transform hover:-translate-y-1">
+                    <div class="w-14 h-14 bg-blue-100 rounded-lg flex items-center justify-center mb-6">
+                        <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-4">SEO Optimized</h3>
+                    <ul class="text-gray-600 space-y-2">
+                        <li class="flex items-start"><span class="mr-2">⚡</span>SEO-focused metadata for title, key phrase and description</li>
+                        <li class="flex items-start"><span class="mr-2">⚡</span>Keywords naturally integrated for better rankings</li>
+                        <li class="flex items-start"><span class="mr-2">⚡</span>Tailored to engage readers and boost search performance</li>
+                    </ul>
+                </div>
 
-      <div class="rotating-object-container">
-        <div class="rotating-object">
-          <img loading="lazy" src="https://nanybot-landing.s3.us-west-1.amazonaws.com/assets/images/ai.png" alt="Image 1">
-        </div>
-        <div class="rotating-object">
-          <img loading="lazy" src="https://nanybot-landing.s3.us-west-1.amazonaws.com/assets/images/automation2.png" alt="Image 1">
-        </div>
-        <div class="rotating-object">
-          <img loading="lazy" src="https://nanybot-landing.s3.us-west-1.amazonaws.com/assets/images/chatgpt-logo.png" alt="Image 1">
-        </div>
-      </div>
+                <!-- Yoast Score -->
+                <div class="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition duration-300 ease-in-out transform hover:-translate-y-1">
+                    <div class="w-14 h-14 bg-green-100 rounded-lg flex items-center justify-center mb-6">
+                        <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-4">Yoast 🟢 Rank-Math</h3>
+                    <p class="text-gray-600">Guaranteed SEO-optimized content that satisfies both Yoast and Rank Math criteria</p>
+                </div>
 
+                <!-- Automatic Image Creation -->
+                <div class="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition duration-300 ease-in-out transform hover:-translate-y-1">
+                    <div class="w-14 h-14 bg-yellow-100 rounded-lg flex items-center justify-center mb-6">
+                        <svg class="w-8 h-8 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-4">Automatic Image Creation</h3>
+                    <ul class="text-gray-600 space-y-2">
+                        <li class="flex items-start"><span class="mr-2">🧊</span>AI-generated high-quality visuals aligned with your content</li>
+                        <li class="flex items-start"><span class="mr-2">🧊</span>Set image metadata (Alt text, Title, Caption) for boosted SEO</li>
+                    </ul>
+                </div>
+
+                <!-- Authoritative Links -->
+                <div class="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition duration-300 ease-in-out transform hover:-translate-y-1">
+                    <div class="w-14 h-14 bg-pink-100 rounded-lg flex items-center justify-center mb-6">
+                        <svg class="w-8 h-8 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-4">Authoritative Links</h3>
+                    <ul class="text-gray-600 space-y-2">
+                        <li class="flex items-start"><span class="mr-2">🔗</span>Add external links through Google search integration</li>
+                        <li class="flex items-start"><span class="mr-2">🔗</span>Automatic selection of high DA/PA authority sources</li>
+                    </ul>
+                </div>
+
+                <!-- WordPress Publishing -->
+                <div class="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition duration-300 ease-in-out transform hover:-translate-y-1">
+                    <div class="w-14 h-14 bg-indigo-100 rounded-lg flex items-center justify-center mb-6">
+                        <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-4">WordPress Publishing</h3>
+                    <ul class="text-gray-600 space-y-2">
+                        <li class="flex items-start"><span class="mr-2">➟</span>One-click publishing to WordPress</li>
+                        <li class="flex items-start"><span class="mr-2">➟</span>Image hosting on your server or AWS</li>
+                        <li class="flex items-start"><span class="mr-2">➟</span>Final review before publication</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
     </section>
 
 
-
-
-    <section id="solution" class="bg-white border-b py-8">
-      <div class="container max-w-5xl mx-auto m-8">
-        <h2 class="w-full my-2 text-5xl font-bold leading-tight text-center text-gray-800">
-          Support Your Customers 24/7
-        </h2>
-        <div class="flex flex-wrap">
-          <div class="w-5/6 sm:w-1/2 p-6 flex items-center text-center"> <!-- Added flex and items-center -->
-            <div>
-              <h3 class="text-4xl text-gray-800 font-bold leading-none mb-3">
-                Never keep them in queue
-              </h3>
-              <p class="text-gray-600 mb-8">
-                Let's create a bot software for you that will do your job in unimaginably less amount of time
-              </p>
+    <!-- Pricing Section -->
+    <section id="pricing" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold mb-4">Simple Pricing</h2>
+                <p class="text-xl text-green-600">No card required to get started</p>
             </div>
-          </div>
-          <div class="w-full sm:w-1/2 p-6 flex justify-center"> <!-- Added flex and justify-center -->
-            <img loading="lazy" src="https://nanybot-landing.s3.us-west-1.amazonaws.com/assets/images/bot-computer-low-resulation.jpg" data-src="bot-computer.png" alt="bot doing human job" class="lazy-load">
-          </div>
-        </div>
-
-        <div class="curve-line-container">
-          <div class="curve-line"></div>
-        </div>
-
-        <div class="flex flex-wrap flex-col-reverse sm:flex-row -mt-6">
-          <div class="w-full sm:w-1/2 p-6 mt-6 flex justify-center"> <!-- Added flex and justify-center -->
-            <img loading="lazy" src="https://nanybot-landing.s3.us-west-1.amazonaws.com/assets/images/girl-using-phone-low-resulation.jpg" data-src="girl-using-phone.png" alt="user chatting with bot" class="lazy-load">
-          </div>
-          <div class="w-full sm:w-1/2 p-6 mt-6 flex items-center text-center"> <!-- Added flex and items-center -->
-            <div class="align-middle">
-              <h3 class="text-4xl text-gray-800 font-bold leading-none mb-3">
-                AI will talk to customers
-              </h3>
-              <p class="text-gray-600 mb-8">
-                It can lessen your cost radically, if something is possible to be done by leveraging the immense power of AI
-              </p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Pricing Cards -->
+                <div class="bg-white rounded-2xl shadow-lg p-8 border border-gray-100 hover:shadow-xl transition duration-300">
+                    <h3 class="text-2xl font-semibold mb-4">Basic</h3>
+                    <p class="text-4xl font-bold mb-8">$0<span class="text-lg text-gray-600">/mo</span></p>
+                    <ul class="space-y-4 mb-8">
+                        <li class="flex items-center text-gray-600">
+                            <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            4 articles/month
+                        </li>
+                        <li class="flex items-center text-gray-600">
+                            <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            On-page SEO
+                        </li>
+                        <li class="flex items-center text-gray-600">
+                            <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            Featured Image
+                        </li>
+                        <li class="flex items-center text-gray-600">
+                            <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            Article Meta Data
+                        </li>
+                        <li class="flex items-center text-gray-600">
+                            <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            Meta Data for Featured Image
+                        </li>
+                        <li class="flex items-center text-gray-600">
+                            <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            External Links
+                        </li>
+                        <li class="flex items-center text-gray-600">
+                            <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            Internal Linking
+                        </li>
+                        <li class="flex items-center text-gray-600">
+                            <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            Auto Publishing to Blog
+                        </li>
+                    </ul>
+                    <a href="https://article.nanybot.com/signin/signup">
+                        <button class="place-order-btn mt-6 bg-blue-500 text-white font-semibold py-2 px-4 rounded shadow hover:bg-blue-600">
+                            Start for FREE
+                        </button>
+                    </a>
+                </div>
+                <div class="bg-white rounded-2xl shadow-xl p-8 border-2 border-purple-600 transform scale-105 relative">
+                    <div class="absolute top-0 right-0 bg-purple-600 text-white px-4 py-1 rounded-bl-lg rounded-tr-xl text-sm font-medium">
+                        POPULAR
+                    </div>
+                    <h3 class="text-2xl font-semibold mb-4">Pro</h3>
+                    <p class="text-4xl font-bold mb-8">$59<span class="text-lg text-gray-600">/mo</span></p>
+                    <ul class="space-y-4 mb-8">
+                        <li class="flex items-center text-gray-600">
+                            <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            30 articles/month
+                        </li>
+                        <li class="flex items-center text-gray-600">
+                            <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            On-page SEO
+                        </li>
+                        <li class="flex items-center text-gray-600">
+                            <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            Featured Image
+                        </li>
+                        <li class="flex items-center text-gray-600">
+                            <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            Article Meta Data
+                        </li>
+                        <li class="flex items-center text-gray-600">
+                            <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            Meta Data for Featured Image
+                        </li>
+                        <li class="flex items-center text-gray-600">
+                            <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            External Links
+                        </li>
+                        <li class="flex items-center text-gray-600">
+                            <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            Internal Linking
+                        </li>
+                        <li class="flex items-center text-gray-600">
+                            <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            Auto Publishing to Blog
+                        </li>
+                        <li class="flex items-center text-gray-600">
+                            <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            Additional 2-5 Images
+                        </li>
+                        <li class="flex items-center text-gray-600">
+                            <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            Up to 5 websites
+                        </li>
+                        <li class="flex items-center text-gray-600">
+                            <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            Blogging Guideline from Specialist
+                        </li>
+                    </ul>
+                    <a href="https://article.nanybot.com/signin/signup">
+                        <button class="place-order-btn mt-6 bg-fuchsia-500 text-white font-semibold py-2 px-4 rounded shadow hover:bg-fuchsia-600">
+                            Purchase Now
+                        </button>
+                    </a>
+                </div>
+                <div class="bg-white rounded-2xl shadow-lg p-8 border border-gray-100 hover:shadow-xl transition duration-300">
+                    <h3 class="text-2xl font-semibold mb-4">Enterprise</h3>
+                    <p class="text-4xl font-bold mb-8">$129<span class="text-lg text-gray-600">/mo</span></p>
+                    <ul class="space-y-4 mb-8">
+                        <li class="flex items-center text-gray-600">
+                            <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            100 articles/month
+                        </li>
+                        <li class="flex items-center text-gray-600">
+                            <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            On-page SEO
+                        </li>
+                        <li class="flex items-center text-gray-600">
+                            <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            Featured Image
+                        </li>
+                        <li class="flex items-center text-gray-600">
+                            <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            Article Meta Data
+                        </li>
+                        <li class="flex items-center text-gray-600">
+                            <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            Meta Data for Featured Image
+                        </li>
+                        <li class="flex items-center text-gray-600">
+                            <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            External Links
+                        </li>
+                        <li class="flex items-center text-gray-600">
+                            <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            Internal Linking
+                        </li>
+                        <li class="flex items-center text-gray-600">
+                            <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            Auto Publishing to Blog
+                        </li>
+                        <li class="flex items-center text-gray-600">
+                            <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            Additional 5-8 Images
+                        </li>
+                        <li class="flex items-center text-gray-600">
+                            <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            Up to 10 websites
+                        </li>
+                        <li class="flex items-center text-gray-600">
+                            <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            Customized Feature
+                        </li>
+                        <li class="flex items-center text-gray-600">
+                            <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            Priority Support
+                        </li>
+                        <li class="flex items-center text-gray-600">
+                            <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            1-to-1 Guideline from Specialist
+                        </li>
+                    </ul>
+                    <a href="https://article.nanybot.com/signin/signup">
+                        <button class="place-order-btn mt-6 bg-green-500 text-white font-semibold py-2 px-4 rounded shadow hover:bg-green-600">
+                            Purchase Now
+                        </button>
+                    </a>
+                </div>
             </div>
-          </div>
         </div>
-
-      </div>
     </section>
 
-
-
-
-
-
-
-
-    <section id="services" class="hidden">
-      <div class="container mx-auto pt-4">
-        <h2 class="w-full my-2 text-5xl font-bold leading-tight text-center text-gray-800 mb-8">
-          AI driven bots | FULLY customized
-        </h2>
-        <div class="services w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          <div class="service-box bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow">
-            <h3 class="name text-center text-xl font-semibold mb-4">Customer support ChatBot</h3>
-            <div class="image-container mb-4">
-              <img loading="lazy" src="https://nanybot-landing.s3.us-west-1.amazonaws.com/assets/images/discord-ai-chatbot-low-resulation.jpg" data-src="discord-ai-chatbot.jpg" alt="" class="rounded-lg lazy-load">
-            </div>
-            <div class="description text-gray-700 mb-4">
-              This bot can handle customer queries, provide information, and more.
-            </div>
-            <a href="" target="_blank" class="cta bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-600 transition-colors">
-              How it works
-            </a>
-          </div>
-
-          <div class="service-box bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow">
-            <h3 class="name text-center text-xl font-semibold mb-4">Chat with your PDF</h3>
-            <div class="image-container mb-4">
-              <img loading="lazy" src="https://nanybot-landing.s3.us-west-1.amazonaws.com/assets/images/chat-with-pdf-low-resulation.jpg" data-src="chat-with-pdf.png" alt="" class="rounded-lg lazy-load">
-            </div>
-            <div class="description text-gray-700 mb-4">
-              Query from any pdf file. It can save huge time in your study, research, business.
-            </div>
-            <a href="" target="_blank" class="cta bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-600 transition-colors">
-              How it works
-            </a>
-          </div>
-
-          <div class="service-box bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow">
-            <h3 class="name text-center text-xl font-semibold mb-4">Messenger ChatBot</h3>
-            <div class="image-container mb-4">
-              <img loading="lazy" src="https://nanybot-landing.s3.us-west-1.amazonaws.com/assets/images/messenger-chatbot-low-resulation.jpg" data-src="messenger-chatbot.jpg" alt="" class="rounded-lg lazy-load">
-            </div>
-            <div class="description text-gray-700 mb-4">
-              Why would you chat with your customers in messenger when AI can do that !
-            </div>
-            <a href="" target="_blank" class="cta bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-600 transition-colors">
-              How it works
-            </a>
-          </div>
-        </div>
-      </div>
-    </section>
-
-
-
-
-
-
-
-    <section id="pricing" class="py-4">
-      <div class="container mx-auto px-2 pb-12 text-gray-800">
-        <h2 class="w-full my-2 text-5xl font-bold leading-tight text-center text-gray-800">Pricing</h2>
-        <div class="payment-model text-center">
-          <span class="description">Pay for only hours you use the bots</span>
-        </div>
-        <div class="w-full mb-4">
-          <div class="h-1 mx-auto gradient w-64 opacity-25 my-0 py-0 rounded-t"></div>
-        </div>
-        <div class="flex flex-col sm:flex-row justify-center pt-12 my-12 sm:my-4">
-          <div class="flex flex-col w-5/6 lg:w-1/4 mx-auto lg:mx-0 rounded-none lg:rounded-l-lg bg-white mt-4">
-            <div class="flex-1 bg-white text-gray-600 rounded-t rounded-b-none overflow-hidden shadow">
-              <div class="package-name package-basic p-8 text-3xl font-bold text-center ">Basic</div>
-              <ul class="w-full text-center text-sm">
-                <li class="border-b py-2"><i class="fas fa-check text-green-500"></i> Option based query reply</li>
-                <li class="border-b py-2"><i class="fas fa-times text-red-500"></i> Retain chat history</li>
-                <li class="border-b py-2"><i class="fas fa-times text-red-500"></i> AI Chat with customers</li>
-                <li class="border-b py-2"><i class="fas fa-times text-red-500"></i> Customer sentiment analysis</li>
-                <li class="border-b py-2"><i class="fas fa-times text-red-500"></i> AI Voice call</li>
-                <li class="border-b py-2"><i class="fas fa-times text-red-500"></i> Personalized experience</li>
-                <li class="border-b py-2"><i class="fas fa-check text-green-500"></i> 24/7 Support by AI</li>
-                <li class="border-b py-2"><i class="fas fa-times text-red-500"></i> Help from NanyBot developers</li>
-              </ul>
-            </div>
-            <div class="flex-none mt-auto bg-white rounded-b rounded-t-none overflow-hidden shadow p-6">
-              <div class="w-full pt-6 text-3xl text-gray-600 font-bold text-center">
-                $0.1
-                <span class="text-base">per bot/usage hour</span>
-              </div>
-              <div class="flex items-center justify-center">
-                <a href="/package/basic" class="package-details mr-4 hidden">Learn more</a>
-                <button class="mx-auto lg:mx-0  gradient text-black font-bold rounded-full my-6 py-4 px-8 shadow-lg focus:outline-none focus:shadow-outline transform transition  duration-300 ease-in-out">
-                  Purchase
+    <!-- Call to Action -->
+    <section class="py-20 bg-gradient-to-r from-purple-600 to-blue-600">
+        <div class="max-w-4xl mx-auto px-4 text-center">
+            <h2 class="text-3xl md:text-4xl font-bold text-white mb-8">Ready to Start Creating?</h2>
+            <p class="text-xl text-purple-100 mb-8">Join thousands of creators who are already using our platform</p>
+            <a href="https://article.nanybot.com">
+                <button class="bg-white text-purple-600 px-8 py-4 rounded-full hover:bg-gray-100 transform hover:scale-105 transition duration-200 ease-in-out font-medium text-lg">
+                    Get Started Free
                 </button>
-              </div>
-            </div>
-          </div>
-          <div class="flex flex-col w-5/6 lg:w-1/3 mx-auto lg:mx-0 rounded-lg bg-white mt-4 sm:-mt-6 shadow-lg z-10">
-            <div class="flex-1 bg-white rounded-t rounded-b-none overflow-hidden shadow">
-              <div class="package-name package-pro w-full p-8 text-3xl font-bold text-center">Pro</div>
-              <!--<div class="h-1 w-full gradient my-0 py-0 rounded-t"></div>-->
-              <ul class="w-full text-center text-base font-bold">
-                <li class="border-b py-2"><i class="fas fa-check text-green-500"></i> Option based query reply</li>
-                <li class="border-b py-2"><i class="fas fa-check text-green-500"></i> Retain chat history</li>
-                <li class="border-b py-2"><i class="fas fa-check text-green-500"></i> AI Chat with customers</li>
-                <li class="border-b py-2"><i class="fas fa-check text-green-500"></i> Customer sentiment analysis</li>
-                <li class="border-b py-2"><i class="fas fa-check text-green-500"></i> AI Voice call</li>
-                <li class="border-b py-2"><i class="fas fa-times text-red-500"></i> Personalized experience</li>
-                <li class="border-b py-2"><i class="fas fa-check text-green-500"></i> Support by human</li>
-                <li class="border-b py-2"><i class="fas fa-check text-green-500"></i> Help from NanyBot developers</li>
-              </ul>
-            </div>
-            <div class="flex-none mt-auto bg-white rounded-b rounded-t-none overflow-hidden shadow p-6">
-              <div class="w-full pt-6 text-4xl font-bold text-center">
-                $2.9
-                <span class="text-base">per bot/usage hour</span>
-              </div>
-              <div class="flex items-center justify-center">
-                <a href="/package/pro" class="package-details mr-4  hidden">Learn more</a>
-                <button class="mx-auto lg:mx-0  gradient text-black font-bold rounded-full my-6 py-4 px-8 shadow-lg focus:outline-none focus:shadow-outline transform transition  duration-300 ease-in-out">
-                  Purchase
-                </button>
-              </div>
-            </div>
-            <div class="glass-effect">
-              <div class="glass-content"></div>
-            </div>
-          </div>
-          <div class="flex flex-col w-5/6 lg:w-1/4 mx-auto lg:mx-0 rounded-none lg:rounded-l-lg bg-white mt-4">
-            <div class="flex-1 bg-white text-gray-600 rounded-t rounded-b-none overflow-hidden shadow">
-              <div class="package-name package-enterprise p-8 text-3xl font-bold text-center ">Enterprise</div>
-              <ul class="w-full text-center text-sm">
-                <li class="border-b py-2"><i class="fas fa-check text-green-500"></i> Option based query reply</li>
-                <li class="border-b py-2"><i class="fas fa-check text-green-500"></i> Retain chat history</li>
-                <li class="border-b py-2"><i class="fas fa-check text-green-500"></i> AI Chat with customers</li>
-                <li class="border-b py-2"><i class="fas fa-check text-green-500"></i> Customer sentiment analysis</li>
-                <li class="border-b py-2"><i class="fas fa-check text-green-500"></i> AI Voice call</li>
-                <li class="border-b py-2"><i class="fas fa-check text-green-500"></i> Personalized experience</li>
-                <li class="border-b py-2"><i class="fas fa-check text-green-500"></i> 24/7 Support by human</li>
-                <li class="border-b py-2"><i class="fas fa-check text-green-500"></i> Help from NanyBot developers</li>
-              </ul>
-            </div>
-            <div class="flex-none mt-auto bg-white rounded-b rounded-t-none overflow-hidden shadow p-6">
-              <div class="w-full pt-6 text-3xl text-gray-600 font-bold text-center">
-                $12.9
-                <span class="text-base">per bot/usage hour</span>
-              </div>
-              <div class="flex items-center justify-center">
-                <a href="/package/enterprise" class="package-details mr-4 hidden">Learn more</a>
-                <button class="mx-auto lg:mx-0  gradient text-black font-bold rounded-full my-6 py-4 px-8 shadow-lg focus:outline-none focus:shadow-outline transform transition  duration-300 ease-in-out">
-                  Purchase
-                </button>
-              </div>
-            </div>
-          </div>
+            </a>
         </div>
-      </div>
-      <div class="offer-msg text-center">You get $50 credits on registration, to test the service...</div>
     </section>
 
-
-
-    <!-- Change the colour #f8fafc to match the previous section colour -->
-    <svg class="wave-top" viewBox="0 0 1439 147" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-      <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g transform="translate(-1.000000, -14.000000)" fill-rule="nonzero">
-          <g class="wave" fill="#ffe0ff">
-            <path
-              d="M1440,84 C1383.555,64.3 1342.555,51.3 1317,45 C1259.5,30.824 1206.707,25.526 1169,22 C1129.711,18.326 1044.426,18.475 980,22 C954.25,23.409 922.25,26.742 884,32 C845.122,37.787 818.455,42.121 804,45 C776.833,50.41 728.136,61.77 713,65 C660.023,76.309 621.544,87.729 584,94 C517.525,105.104 484.525,106.438 429,108 C379.49,106.484 342.823,104.484 319,102 C278.571,97.783 231.737,88.736 205,84 C154.629,75.076 86.296,57.743 0,32 L0,0 L1440,0 L1440,84 Z"
-            ></path>
-          </g>
-          <g transform="translate(1.000000, 15.000000)" fill="#FFFFFF">
-            <g transform="translate(719.500000, 68.500000) rotate(-180.000000) translate(-719.500000, -68.500000) ">
-              <path d="M0,0 C90.7283404,0.927527913 147.912752,27.187927 291.910178,59.9119003 C387.908462,81.7278826 543.605069,89.334785 759,82.7326078 C469.336065,156.254352 216.336065,153.6679 0,74.9732496" opacity="0.100000001"></path>
-              <path
-                d="M100,104.708498 C277.413333,72.2345949 426.147877,52.5246657 546.203633,45.5787101 C666.259389,38.6327546 810.524845,41.7979068 979,55.0741668 C931.069965,56.122511 810.303266,74.8455141 616.699903,111.243176 C423.096539,147.640838 250.863238,145.462612 100,104.708498 Z"
-                opacity="0.100000001"
-              ></path>
-              <path d="M1046,51.6521276 C1130.83045,29.328812 1279.08318,17.607883 1439,40.1656806 L1439,120 C1271.17211,77.9435312 1140.17211,55.1609071 1046,51.6521276 Z" opacity="0.200000003"></path>
-            </g>
-          </g>
-        </g>
-      </g>
-    </svg>
-
-    <section id="contact" class="container mx-auto text-center py-48 mb-12">
-      <h2 class="w-full my-2 text-5xl font-bold leading-tight text-center text-black">
-        We will love to answer your query
-      </h2>
-      <p class="text-xl">contact@nanybot.com</p>
-      <div class="hidden w-full mb-4">
-        <div class="h-1 mx-auto bg-white w-1/6 opacity-0 my-0 py-0 rounded-t"></div>
-      </div>
-
-      <a href="" id="discord-link" class="hidden mx-auto lg:mx-0 bg-white text-gray-800 font-bold rounded-full my-6 py-4 px-8 shadow-lg focus:outline-none focus:shadow-outline transform transition  duration-300 ease-in-out">
-        Let's Talk in Discord
-      </a>
-    </section>
-
-
-    <!--Footer-->
     <footer class="">
-      <div class="container mx-auto px-8 pt-16 pb-6">
-        <div class="w-full flex flex-col md:flex-row py-6">
-          <div class="flex-1 mb-6 text-black">
-            <a class="text-black-600 no-underline hover:no-underline font-bold text-2xl lg:text-4xl" href="">
-              Nany Bot
-            </a>
-            <div>AI customer support</div>
-          </div>
-          <div class="flex-1">
-            <!--<p class=" uppercase text-gray-500 md:mb-6">Links</p>-->
-            <ul class="list-reset mb-6">
-              <li class="mt-2 inline-block mr-2 md:block md:mr-0">
-                <a href="faq.html" class="no-underline hover:underline text-gray-800 hover:text-pink-500">FAQ</a>
-              </li>
-              <li class="mt-2 inline-block mr-2 md:block md:mr-0">
-                <a href="support.html" class="no-underline hover:underline text-gray-800 hover:text-pink-500">Support</a>
-              </li>
-            </ul>
-          </div>
-          <div class="flex-1">
-            <!--<p class="uppercase text-gray-500 md:mb-6">Legal</p>-->
-            <ul class="list-reset mb-6">
-              <li class="mt-2 inline-block mr-2 md:block md:mr-0">
-                <a href="refund-policy.html" class="no-underline hover:underline text-gray-800 hover:text-pink-500">Refund Policy</a>
-              </li>
-              <li class="mt-2 inline-block mr-2 md:block md:mr-0">
-                <a href="privacy-policy.html" class="no-underline hover:underline text-gray-800 hover:text-pink-500">Privacy Policy</a>
-              </li>
-              <li class="mt-2 inline-block mr-2 md:block md:mr-0">
-                <a href="terms-and-conditions.html" class="no-underline hover:underline text-gray-800 hover:text-pink-500">Terms & Condition</a>
-              </li>
-            </ul>
-          </div>
-          <div class="flex-1">
-            <!--<p class="uppercase text-gray-500 md:mb-6">Social</p>-->
-            <ul class="list-reset mb-6">
-              <li class="mt-2 inline-block mr-2 md:block md:mr-0">
-                <a href="" onclick="return false" class="no-underline hover:underline text-gray-800 hover:text-pink-500">Twitter</a>
-              </li>
-              <li class="mt-2 inline-block mr-2 md:block md:mr-0">
-                <a href="" onclick="return false" class="no-underline hover:underline text-gray-800 hover:text-pink-500">Youtube</a>
-              </li>
-              <li class="mt-2 inline-block mr-2 md:block md:mr-0">
-                <a href="" onclick="return false" class="no-underline hover:underline text-gray-800 hover:text-pink-500">Facebook</a>
-              </li>
-            </ul>
-          </div>
-          <div class="flex-1">
-            <!--<p class="uppercase text-gray-500 md:mb-6">Company</p>-->
-            <ul class="list-reset mb-6">
-<!--              <li class="mt-2 inline-block mr-2 md:block md:mr-0">-->
-<!--                <a href="" class="no-underline hover:underline text-gray-800 hover:text-pink-500">Contact</a>-->
-<!--              </li>-->
-              <li class="mt-2 inline-block mr-2 md:block md:mr-0">
-                <a href="about-us.html" class="no-underline hover:underline text-gray-800 hover:text-pink-500">About Us</a>
-              </li>
-<!--              <li class="mt-2 inline-block mr-2 md:block md:mr-0">-->
-<!--                <a href="#" class="no-underline hover:underline text-gray-800 hover:text-pink-500">Official Blog</a>-->
-<!--              </li>-->
-            </ul>
-          </div>
+        <div class="container mx-auto px-8 pt-16 pb-6">
+            <div class="w-full flex flex-col md:flex-row py-6">
+                <div class="flex-1 mb-6 text-black">
+                    <a class="text-black-600 no-underline hover:no-underline font-bold text-2xl lg:text-4xl" href="">
+                        Nany Bot
+                    </a>
+                    <div>AI Content Creation</div>
+                </div>
+                <div class="flex-1">
+                    <!--<p class=" uppercase text-gray-500 md:mb-6">Links</p>-->
+                    <ul class="list-reset mb-6">
+                        <li class="mt-2 inline-block mr-2 md:block md:mr-0">
+                            <a href="faq.html" class="no-underline hover:underline text-gray-800 hover:text-pink-500">FAQ</a>
+                        </li>
+                        <li class="mt-2 inline-block mr-2 md:block md:mr-0">
+                            <a href="support.html" class="no-underline hover:underline text-gray-800 hover:text-pink-500">Support</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="flex-1">
+                    <!--<p class="uppercase text-gray-500 md:mb-6">Legal</p>-->
+                    <ul class="list-reset mb-6">
+                        <li class="mt-2 inline-block mr-2 md:block md:mr-0">
+                            <a href="refund-policy.html" class="no-underline hover:underline text-gray-800 hover:text-pink-500">Refund Policy</a>
+                        </li>
+                        <li class="mt-2 inline-block mr-2 md:block md:mr-0">
+                            <a href="privacy-policy.html" class="no-underline hover:underline text-gray-800 hover:text-pink-500">Privacy Policy</a>
+                        </li>
+                        <li class="mt-2 inline-block mr-2 md:block md:mr-0">
+                            <a href="terms-and-conditions.html" class="no-underline hover:underline text-gray-800 hover:text-pink-500">Terms & Condition</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="flex-1 hidden">
+                    <!--<p class="uppercase text-gray-500 md:mb-6">Social</p>-->
+                    <ul class="list-reset mb-6">
+                        <li class="mt-2 inline-block mr-2 md:block md:mr-0">
+                            <a href="" onclick="return false" class="no-underline hover:underline text-gray-800 hover:text-pink-500">Twitter</a>
+                        </li>
+                        <li class="mt-2 inline-block mr-2 md:block md:mr-0">
+                            <a href="" onclick="return false" class="no-underline hover:underline text-gray-800 hover:text-pink-500">Youtube</a>
+                        </li>
+                        <li class="mt-2 inline-block mr-2 md:block md:mr-0">
+                            <a href="" onclick="return false" class="no-underline hover:underline text-gray-800 hover:text-pink-500">Facebook</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="flex-1">
+                    <!--<p class="uppercase text-gray-500 md:mb-6">Company</p>-->
+                    <ul class="list-reset mb-6">
+                        <!--              <li class="mt-2 inline-block mr-2 md:block md:mr-0">-->
+                        <!--                <a href="" class="no-underline hover:underline text-gray-800 hover:text-pink-500">Contact</a>-->
+                        <!--              </li>-->
+                        <li class="mt-2 inline-block mr-2 md:block md:mr-0">
+                            <a href="about-us.html" class="no-underline hover:underline text-gray-800 hover:text-pink-500">About Us</a>
+                        </li>
+                        <!--              <li class="mt-2 inline-block mr-2 md:block md:mr-0">-->
+                        <!--                <a href="#" class="no-underline hover:underline text-gray-800 hover:text-pink-500">Official Blog</a>-->
+                        <!--              </li>-->
+                    </ul>
+                </div>
+            </div>
         </div>
-      </div>
     </footer>
 
 
 
+
     <script>
-        let scrollpos = window.scrollY;
-        const header = document.getElementById("header");
-        const navcontent = document.getElementById("nav-content");
-        const navaction = document.getElementById("navAction");
-        const brandname = document.getElementById("brandname");
-        const toToggle = document.querySelectorAll(".toggleColour");
+        /*Toggle dropdown list*/
+        /*https://gist.github.com/slavapas/593e8e50cf4cc16ac972afcbad4f70c8*/
 
-        document.addEventListener("scroll", function () {
-          /*Apply classes for slide in bar*/
-            scrollpos = window.scrollY;
+        const navMenuDiv = document.getElementById("nav-content");
+        const navMenu = document.getElementById("nav-toggle");
 
-            if (scrollpos > 10) {
-                header.classList.add("bg-white");
-                navaction.classList.remove("bg-white");
-                navaction.classList.add("gradient");
-                navaction.classList.remove("text-gray-800");
-                navaction.classList.add("text-black");
-                //Use to switch toggleColour colours
-                for (let i = 0; i < toToggle.length; i++) {
-                    toToggle[i].classList.add("text-gray-800");
-                    toToggle[i].classList.remove("text-black");
+        document.onclick = check;
+        function check(e) {
+            const target = (e && e.target) || (event && event.srcElement);
+
+            //Nav Menu
+            if (!checkParent(target, navMenuDiv)) {
+                // click NOT on the menu
+                if (checkParent(target, navMenu)) {
+                    // click on the link
+                    if (navMenuDiv.classList.contains("hidden")) {
+                        navMenuDiv.classList.remove("hidden");
+                    } else {
+                        navMenuDiv.classList.add("hidden");
+                    }
+                } else {
+                    // click both outside link and outside menu, hide menu
+                    navMenuDiv.classList.add("hidden");
                 }
-                header.classList.add("shadow");
-                navcontent.classList.remove("bg-gray-100");
-                navcontent.classList.add("bg-white");
-            } else {
-                header.classList.remove("bg-white");
-                navaction.classList.remove("gradient");
-                navaction.classList.add("bg-white");
-                navaction.classList.remove("text-black");
-                navaction.classList.add("text-gray-800");
-                //Use to switch toggleColour colours
-                for (let i = 0; i < toToggle.length; i++) {
-                    toToggle[i].classList.add("text-black");
-                    toToggle[i].classList.remove("text-gray-800");
-                }
-
-                header.classList.remove("shadow");
-                navcontent.classList.remove("bg-white");
-                navcontent.classList.add("bg-gray-100");
             }
-        });
-
-    </script>
-
-
-
-
-    <script>
-      /*Toggle dropdown list*/
-      /*https://gist.github.com/slavapas/593e8e50cf4cc16ac972afcbad4f70c8*/
-
-      const navMenuDiv = document.getElementById("nav-content");
-      const navMenu = document.getElementById("nav-toggle");
-
-      document.onclick = check;
-      function check(e) {
-          const target = (e && e.target) || (event && event.srcElement);
-
-          //Nav Menu
-          if (!checkParent(target, navMenuDiv)) {
-              // click NOT on the menu
-              if (checkParent(target, navMenu)) {
-                  // click on the link
-                  if (navMenuDiv.classList.contains("hidden")) {
-                      navMenuDiv.classList.remove("hidden");
-                  } else {
-                      navMenuDiv.classList.add("hidden");
-                  }
-              } else {
-                  // click both outside link and outside menu, hide menu
-                  navMenuDiv.classList.add("hidden");
-              }
-          }
-      }
-      function checkParent(t, elm) {
-          while (t.parentNode) {
-              if (t == elm) {
-                  return true;
-              }
-              t = t.parentNode;
-          }
-          return false;
-      }
+        }
+        function checkParent(t, elm) {
+            while (t.parentNode) {
+                if (t == elm) {
+                    return true;
+                }
+                t = t.parentNode;
+            }
+            return false;
+        }
     </script>
 
 
@@ -580,7 +585,7 @@
 
 
     <script>
-      /* Load font awesome */
+        /* Load font awesome */
         document.addEventListener('DOMContentLoaded', function() {
             setTimeout(function() {
                 const faLink = document.createElement('link');
@@ -596,7 +601,7 @@
 
 
     <script>
-      /* progressive loading */
+        /* progressive loading */
         window.addEventListener('load', function() {
             const baseUrl = 'https://nanybot-landing.s3.us-west-1.amazonaws.com/assets/images';
 
@@ -610,7 +615,5 @@
         });
     </script>
 
-
-
-  </body>
+</body>
 </html>
