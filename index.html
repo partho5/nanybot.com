@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CreativeStudio | Content Creation Platform</title>
+    <title>Nany Bot | Create AI Content by click</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <style>
@@ -20,6 +20,9 @@
         <div class="max-w-7xl mx-auto px-4">
             <div class="flex justify-between h-16">
                 <div class="flex items-center">
+                    <span class="mr-2">
+                        <img src="https://nanybot-landing.s3.us-west-1.amazonaws.com/assets/images/nanybot-logo-128x128.webp" class="w-10 h-10 rounded-full" alt="NanyBot Logo" />
+                    </span>
                     <span class="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-500 text-transparent bg-clip-text">Nany Bot</span>
                 </div>
                 <div class="hidden md:flex items-center space-x-8">
@@ -76,7 +79,7 @@
                 <p class="text-xl text-gray-600"><strong>Quality</strong> article, <strong>Information</strong>-rich, <strong>SEO</strong> ready</p>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <!-- High-Quality Articles -->
+
                 <div class="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition duration-300 ease-in-out transform hover:-translate-y-1">
                     <div class="w-14 h-14 bg-purple-100 rounded-lg flex items-center justify-center mb-6">
                         <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -91,7 +94,7 @@
                     </ul>
                 </div>
 
-                <!-- SEO Optimized -->
+
                 <div class="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition duration-300 ease-in-out transform hover:-translate-y-1">
                     <div class="w-14 h-14 bg-blue-100 rounded-lg flex items-center justify-center mb-6">
                         <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -106,7 +109,7 @@
                     </ul>
                 </div>
 
-                <!-- Yoast Score -->
+
                 <div class="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition duration-300 ease-in-out transform hover:-translate-y-1">
                     <div class="w-14 h-14 bg-green-100 rounded-lg flex items-center justify-center mb-6">
                         <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -117,7 +120,7 @@
                     <p class="text-gray-600">Guaranteed SEO-optimized content that satisfies both Yoast and Rank Math criteria</p>
                 </div>
 
-                <!-- Automatic Image Creation -->
+
                 <div class="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition duration-300 ease-in-out transform hover:-translate-y-1">
                     <div class="w-14 h-14 bg-yellow-100 rounded-lg flex items-center justify-center mb-6">
                         <svg class="w-8 h-8 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -132,7 +135,7 @@
                     </ul>
                 </div>
 
-                <!-- Authoritative Links -->
+
                 <div class="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition duration-300 ease-in-out transform hover:-translate-y-1">
                     <div class="w-14 h-14 bg-pink-100 rounded-lg flex items-center justify-center mb-6">
                         <svg class="w-8 h-8 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -146,7 +149,7 @@
                     </ul>
                 </div>
 
-                <!-- WordPress Publishing -->
+
                 <div class="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition duration-300 ease-in-out transform hover:-translate-y-1">
                     <div class="w-14 h-14 bg-indigo-100 rounded-lg flex items-center justify-center mb-6">
                         <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -166,17 +169,21 @@
 
 
     <!-- Pricing Section -->
-    <section id="pricing" class="py-20 bg-white">
+    <section id="pricing" class="py-20 border border-t border-slate-200 bg-gradient-to-br from-indigo-50 to-purple-100">
         <div class="max-w-7xl mx-auto px-4">
             <div class="text-center mb-16">
                 <h2 class="text-4xl font-bold mb-4">Simple Pricing</h2>
-                <p class="text-xl text-green-600">No card required to get started</p>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <!-- Pricing Cards -->
-                <div class="bg-white rounded-2xl shadow-lg p-8 border border-gray-100 hover:shadow-xl transition duration-300">
-                    <h3 class="text-2xl font-semibold mb-4">FREE</h3>
-                    <p class="text-4xl font-bold mb-8">$0<span class="text-lg text-gray-600">/mo</span></p>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+
+                <div class="bg-white rounded-2xl shadow-lg px-4 py-8 border border-gray-100 hover:shadow-xl transition duration-300">
+                    <div class="text-center">
+                        <h3 class="text-2xl font-semibold mb-4">Basic</h3>
+                        <div class="text-4xl mb-8">
+                            <p class="font-bold">$0<span class="text-lg text-gray-600">/mo</span></p>
+                            <p class="text-sm font-t text-green-600 mt-2">No card required</p>
+                        </div>
+                    </div>
                     <ul class="space-y-4 mb-8">
                         <li class="flex items-center text-gray-600">
                             <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -188,7 +195,7 @@
                             <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                             </svg>
-                            On-page SEO
+                            Complete On-page SEO
                         </li>
                         <li class="flex items-center text-gray-600">
                             <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -206,7 +213,7 @@
                             <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                             </svg>
-                            Meta Data for Featured Image
+                            Featured Image Meta
                         </li>
                         <li class="flex items-center text-gray-600">
                             <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -214,11 +221,77 @@
                             </svg>
                             External Links
                         </li>
+                    </ul>
+                    <div class="text-center">
+                        <a href="https://article.nanybot.com/signin/signup">
+                            <button class="place-order-btn mt-6 bg-green-500 text-white font-semibold py-2 px-4 rounded shadow hover:bg-green-600">
+                                Start for FREE
+                            </button>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-lg px-4 py-8 border border-gray-100 hover:shadow-xl transition duration-300">
+                    <div class="text-center">
+                        <h3 class="text-2xl font-semibold mb-4">Advanced</h3>
+                        <div class="text-4xl mb-14">
+                            <span class="font-bold">$14<span class="text-lg text-gray-600">/mo</span></span>
+                        </div>
+                    </div>
+                    <ul class="space-y-4 mb-8">
                         <li class="flex items-center text-gray-600">
                             <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                             </svg>
+                            14 articles/month
+                        </li>
+                        <li class="flex items-center text-gray-600">
+                            <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            Long Article
+                        </li>
+                        <li class="flex items-center text-gray-600">
+                            <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            Complete On-page SEO
+                        </li>
+                        <li class="flex items-center text-gray-600">
+                            <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            Featured Image
+                        </li>
+                        <li class="flex items-center text-gray-600">
+                            <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            Article Meta Data
+                        </li>
+                        <li class="flex items-center text-gray-600">
+                            <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            Featured Image Meta
+                        </li>
+                        <li class="flex items-center text-gray-600">
+                            <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            External Links
+                        </li>
+                        <li class="flex items-center text-gray-600 hidden">
+                            <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
                             Internal Linking
+                        </li>
+                        <li class="flex items-center text-gray-600">
+                            <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            Plagiarism Checked
                         </li>
                         <li class="flex items-center text-gray-600">
                             <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -227,30 +300,43 @@
                             Auto Publishing to Blog
                         </li>
                     </ul>
-                    <a href="https://article.nanybot.com/signin/signup">
-                        <button class="place-order-btn mt-6 bg-blue-500 text-white font-semibold py-2 px-4 rounded shadow hover:bg-blue-600">
-                            Start for FREE
-                        </button>
-                    </a>
-                </div>
-                <div class="bg-white rounded-2xl shadow-xl p-8 border-2 border-purple-600 transform scale-105 relative">
-                    <div class="absolute top-0 right-0 bg-purple-600 text-white px-4 py-1 rounded-bl-lg rounded-tr-xl text-sm font-medium">
-                        POPULAR
+                    <div class="text-center">
+                        <a href="https://article.nanybot.com/signin/signup">
+                            <button class="place-order-btn mt-6 bg-blue-500 text-white font-semibold py-2 px-4 rounded shadow hover:bg-blue-600">
+                                Purchase Now
+                            </button>
+                        </a>
                     </div>
-                    <h3 class="text-2xl font-semibold mb-4">Pro</h3>
-                    <p class="text-4xl font-bold mb-8">$59<span class="text-lg text-gray-600">/mo</span></p>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-xl px-4 py-8 border-2 border-purple-600 transform scale-105 relative">
+                    <div class="absolute top-0 right-0 bg-fuchsia-500 text-white px-4 py-1 rounded-bl-lg rounded-tr-xl text-sm font-medium">
+                        Best Seller
+                    </div>
+                    <div class="text-center">
+                        <h3 class="text-2xl font-semibold mb-4">Pro</h3>
+                        <div class="text-4xl mb-14">
+                            <span class="font-bold">$59<span class="text-lg text-gray-600">/mo</span></span>
+                        </div>
+                    </div>
                     <ul class="space-y-4 mb-8">
                         <li class="flex items-center text-gray-600">
                             <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                             </svg>
-                            30 articles/month
+                            50 articles/month
                         </li>
                         <li class="flex items-center text-gray-600">
                             <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                             </svg>
-                            On-page SEO
+                            In-depth Article
+                        </li>
+                        <li class="flex items-center text-gray-600">
+                            <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            Complete On-page SEO
                         </li>
                         <li class="flex items-center text-gray-600">
                             <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -268,25 +354,13 @@
                             <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                             </svg>
-                            Meta Data for Featured Image
+                            Featured Image Meta
                         </li>
                         <li class="flex items-center text-gray-600">
                             <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                             </svg>
                             External Links
-                        </li>
-                        <li class="flex items-center text-gray-600">
-                            <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                            </svg>
-                            Internal Linking
-                        </li>
-                        <li class="flex items-center text-gray-600">
-                            <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                            </svg>
-                            Auto Publishing to Blog
                         </li>
                         <li class="flex items-center text-gray-600">
                             <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -298,36 +372,84 @@
                             <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                             </svg>
-                            Up to 5 websites
+                            Image SEO
+                        </li>
+                        <li class="flex items-center text-gray-600 hidden">
+                            <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            Internal Linking
                         </li>
                         <li class="flex items-center text-gray-600">
                             <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                             </svg>
-                            Blogging Guideline from Specialist
+                            Plagiarism Checked
+                        </li>
+                        <li class="flex items-center text-gray-600">
+                            <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            Auto Publishing to Blog
+                        </li>
+                        <li class="flex items-center text-gray-600">
+                            <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            Advanced Humanized
+                        </li>
+                        <li class="flex items-center text-gray-600">
+                            <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            Multi-site (5 websites)
+                        </li>
+                        <li class="flex items-center text-gray-600">
+                            <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            Blogging Guideline
+                        </li>
+                        <li class="flex items-center text-gray-600">
+                            <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            Email Support
                         </li>
                     </ul>
-                    <a href="https://article.nanybot.com/signin/signup">
-                        <button class="place-order-btn mt-6 bg-fuchsia-500 text-white font-semibold py-2 px-4 rounded shadow hover:bg-fuchsia-600">
-                            Purchase Now
-                        </button>
-                    </a>
+                    <div class="text-center">
+                        <a href="https://article.nanybot.com/signin/signup">
+                            <button class="place-order-btn mt-6 bg-fuchsia-500 text-white font-semibold py-2 px-4 rounded shadow hover:bg-fuchsia-600">
+                                Purchase Now
+                            </button>
+                        </a>
+                    </div>
                 </div>
-                <div class="bg-white rounded-2xl shadow-lg p-8 border border-gray-100 hover:shadow-xl transition duration-300">
-                    <h3 class="text-2xl font-semibold mb-4">Enterprise</h3>
-                    <p class="text-4xl font-bold mb-8">$129<span class="text-lg text-gray-600">/mo</span></p>
+                <div class="bg-white rounded-2xl shadow-lg px-4 py-8 border border-gray-100 hover:shadow-xl transition duration-300">
+                    <div class="text-center">
+                        <h3 class="text-2xl font-semibold mb-4">Enterprise</h3>
+                        <div class="text-4xl mb-14">
+                            <span class="font-bold">$129<span class="text-lg text-gray-600">/mo</span></span>
+                        </div>
+                    </div>
                     <ul class="space-y-4 mb-8">
                         <li class="flex items-center text-gray-600">
                             <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                             </svg>
-                            100 articles/month
+                            150 articles/month
                         </li>
                         <li class="flex items-center text-gray-600">
                             <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                             </svg>
-                            On-page SEO
+                            In-depth Article
+                        </li>
+                        <li class="flex items-center text-gray-600">
+                            <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            Complete On-page SEO
                         </li>
                         <li class="flex items-center text-gray-600">
                             <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -345,7 +467,7 @@
                             <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                             </svg>
-                            Meta Data for Featured Image
+                            Featured Image Meta
                         </li>
                         <li class="flex items-center text-gray-600">
                             <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -357,7 +479,25 @@
                             <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                             </svg>
+                            Additional 5-8 Images
+                        </li>
+                        <li class="flex items-center text-gray-600">
+                            <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            Image SEO
+                        </li>
+                        <li class="flex items-center text-gray-600 hidden">
+                            <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
                             Internal Linking
+                        </li>
+                        <li class="flex items-center text-gray-600">
+                            <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            Plagiarism Checked
                         </li>
                         <li class="flex items-center text-gray-600">
                             <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -369,7 +509,7 @@
                             <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                             </svg>
-                            Additional 5-8 Images
+                            Advanced Humanized
                         </li>
                         <li class="flex items-center text-gray-600">
                             <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -381,13 +521,13 @@
                             <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                             </svg>
-                            Customized Feature
+                            Feature Request
                         </li>
                         <li class="flex items-center text-gray-600">
                             <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                             </svg>
-                            Priority Support
+                            Priority Support via Email & Live Chat
                         </li>
                         <li class="flex items-center text-gray-600">
                             <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -396,11 +536,13 @@
                             1-to-1 Guideline from Specialist
                         </li>
                     </ul>
-                    <a href="https://article.nanybot.com/signin/signup">
-                        <button class="place-order-btn mt-6 bg-green-500 text-white font-semibold py-2 px-4 rounded shadow hover:bg-green-600">
-                            Purchase Now
-                        </button>
-                    </a>
+                    <div class="text-center">
+                        <a href="https://article.nanybot.com/signin/signup">
+                            <button class="place-order-btn mt-6 bg-red-500 text-white font-semibold py-2 px-4 rounded shadow hover:bg-red-600">
+                                Purchase Now
+                            </button>
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
