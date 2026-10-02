@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://nanybot.com/ai-laptop-solver/sitemap.xml

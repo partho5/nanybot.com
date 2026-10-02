@@ -3,6 +3,8 @@
     site/                             the static website: the ONLY folder that goes on the server
     FEATURES.md                       internal feature inventory. Never upload.
     landing-page-plan.md              internal: THE landing page plan (story, copy, look, SEO). Never upload.
+    build.md                          internal: build progress and how to build the next section. Never upload.
+    tailwind/                         Tailwind build, fonts and image scripts. Never upload.
     refund-policy-draft.md            internal: draft refund policy text for site/refund/, for Partho to edit. Never upload.
     landing-page-features-and-narrative.md   internal: older brief, superseded by landing-page-plan.md except its deploy rules. Never upload.
     NANYBOT-LANDING-GUIDE.md          step-by-step guide for the server agent to deploy site/ on nanybot.com

@@ -1,0 +1,1015 @@
+/* AI Laptop Solver landing site. Source for site/assets/site.css (npm run build).
+   Tokens and rules come from landing-page-plan.md, section 3. */
+
+@import "tailwindcss" source(none);
+@source "../site";
+@source not "../site/index-v1.html";
+
+/* ---------- Fonts (self-hosted, latin subset; copied by npm run fonts) ---------- */
+
+@font-face {
+  font-family: "Chakra Petch";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("fonts/chakra-petch-latin-600-normal.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Chakra Petch";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("fonts/chakra-petch-latin-700-normal.woff2") format("woff2");
+}
+@font-face {
+  font-family: "IBM Plex Sans";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("fonts/ibm-plex-sans-latin-400-normal.woff2") format("woff2");
+}
+@font-face {
+  font-family: "IBM Plex Sans";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("fonts/ibm-plex-sans-latin-600-normal.woff2") format("woff2");
+}
+/* Medium italic: FAQ questions only (the human voice of the page). Loaded only when the FAQ is drawn. */
+@font-face {
+  font-family: "IBM Plex Sans";
+  font-style: italic;
+  font-weight: 500;
+  font-display: swap;
+  src: url("fonts/ibm-plex-sans-latin-500-italic.woff2") format("woff2");
+}
+@font-face {
+  font-family: "IBM Plex Mono";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("fonts/ibm-plex-mono-latin-500-normal.woff2") format("woff2");
+}
+
+/* ---------- Tokens (plan 3.1). Only these colours exist. ---------- */
+
+@theme {
+  --color-*: initial;
+  --color-void: #05080b;
+  --color-night: #0a1016;
+  --color-panel: #111a23;
+  --color-line-dark: #1e2a36;
+  --color-text-hi: #f2f5f7;
+  --color-text-lo: #b4c0cc;
+  --color-scan: #1ed68a;
+  --color-scan-ink: #03140c;
+  --color-signal: #4fd8f0;
+  --color-warn: #ffb020;
+  --color-alert: #ff5a5f;
+  --color-clean: #f5f8f7;
+  --color-white: #ffffff;
+  --color-ink: #0a1016;
+  --color-ink-2: #3a4652;
+  --color-scan-deep: #087a4a;
+  --color-line-light: #d7dee3;
+
+  --font-display: "Chakra Petch", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+
+  --animate-scan: scan-sweep 1.2s cubic-bezier(0.45, 0, 0.2, 1) 0.35s both;
+  --animate-readout: readout-in 0.4s ease-out 1.5s both;
+  --animate-reveal: readout-in 0.45s ease-out both;
+  --animate-tick: tick-on 0.3s ease-out both;
+
+  @keyframes scan-sweep {
+    0% { transform: translateY(-100%); opacity: 1; }
+    85% { opacity: 1; }
+    100% { transform: translateY(0); opacity: 0; }
+  }
+  @keyframes tick-on {
+    from { background: transparent; border-color: var(--color-line-dark); color: transparent; }
+    to { background: var(--color-scan); border-color: var(--color-scan); color: var(--color-scan-ink); }
+  }
+  @keyframes readout-in {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+}
+
+/* ---------- Base ---------- */
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    background: var(--color-void);
+    color: var(--color-text-hi);
+    font-family: var(--font-sans);
+    font-size: 17px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  @media (min-width: 768px) {
+    body { font-size: 18px; }
+  }
+  section[id] { scroll-margin-top: 72px; }
+  :focus-visible {
+    outline: 2px solid var(--color-signal);
+    outline-offset: 3px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-delay: 0s !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+/* ---------- Components ---------- */
+
+@layer components {
+  /* Page width: 1200px max, 16px gutter on phones. */
+  .shell {
+    width: 100%;
+    max-width: 1200px;
+    margin-inline: auto;
+    padding-inline: 16px;
+  }
+  @media (min-width: 768px) {
+    .shell { padding-inline: 32px; }
+  }
+
+  /* Chamfer: one 45 degree cut corner (plan 3.3). The fill sits on ::before so focus outlines are not clipped. */
+  .cut-br { clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--cut, 12px)), calc(100% - var(--cut, 12px)) 100%, 0 100%); }
+  .cut-tl { clip-path: polygon(var(--cut, 12px) 0, 100% 0, 100% 100%, 0 100%, 0 var(--cut, 12px)); }
+
+  /* Primary button: green, chamfered bottom-right. */
+  .btn {
+    position: relative;
+    isolation: isolate;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.625rem;
+    min-height: 48px;
+    padding: 0 1.25rem;
+    font-weight: 600;
+    line-height: 1.2;
+    color: var(--color-scan-ink);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .btn::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: var(--color-scan);
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%);
+    transition: background-color 0.15s ease;
+  }
+  .btn:hover::before { background: color-mix(in oklab, var(--color-scan) 82%, white); }
+  .btn-lg {
+    min-height: 60px;
+    padding: 0 1.75rem;
+    font-size: 1.0625rem;
+  }
+
+  /* Bridge line: the page's signature. Asks the next question, links to the next section. */
+  .bridge {
+    display: inline-flex;
+    align-items: flex-start;
+    gap: 0.875rem;
+    padding-block: 12px;
+    font-family: var(--font-mono);
+    font-weight: 500;
+    font-size: 15px;
+    line-height: 24px;
+    color: var(--color-signal);
+    text-decoration: none;
+  }
+  /* The rule lines up with the first line of text when a long bridge wraps on phones. */
+  .bridge::before {
+    content: "";
+    flex: none;
+    width: 40px;
+    height: 1px;
+    margin-top: 12px;
+    background: currentColor;
+    transition: width 0.2s ease;
+  }
+  .bridge:hover::before { width: 56px; }
+
+  /* Faint 48px grid, 4% opacity (hero and final call to action only). */
+  .hud-grid {
+    background-image:
+      linear-gradient(to right, rgb(242 245 247 / 0.04) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(242 245 247 / 0.04) 1px, transparent 1px);
+    background-size: 48px 48px;
+  }
+
+  /* Screenshot frame: 1px line, chamfered top-left, thin cyan HUD brackets at the corners. */
+  .shot {
+    --cut: 28px;
+    position: relative;
+  }
+  .shot-frame {
+    position: relative;
+    padding: 1px;
+    background: var(--color-line-dark);
+    clip-path: polygon(var(--cut) 0, 100% 0, 100% 100%, 0 100%, 0 var(--cut));
+  }
+  .shot-frame img {
+    display: block;
+    width: 100%;
+    height: auto;
+    clip-path: polygon(calc(var(--cut) - 0.5px) 0, 100% 0, 100% 100%, 0 100%, 0 calc(var(--cut) - 0.5px));
+  }
+  .hud {
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    border: 0 solid var(--color-signal);
+    pointer-events: none;
+  }
+  .hud-bl { left: -9px; bottom: -9px; border-left-width: 1.5px; border-bottom-width: 1.5px; }
+  .hud-br { right: -9px; bottom: -9px; border-right-width: 1.5px; border-bottom-width: 1.5px; }
+  .hud-tr { right: -9px; top: -9px; border-right-width: 1.5px; border-top-width: 1.5px; }
+  /* Top-left is the cut corner: a short line parallel to the cut instead of an L. */
+  .hud-tl {
+    left: calc(var(--cut) / 2 - 6px - 12px);
+    top: calc(var(--cut) / 2 - 6px);
+    width: 24px;
+    height: 0;
+    border-top-width: 1.5px;
+    transform: rotate(-45deg);
+  }
+
+  /* One-time scan line sweep over the hero screenshot. */
+  .scanline {
+    position: absolute;
+    inset: 1px;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .scanline::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to bottom,
+      transparent calc(100% - 96px),
+      rgb(79 216 240 / 0.09) calc(100% - 2px),
+      var(--color-signal) calc(100% - 2px)
+    );
+    transform: translateY(-100%);
+    opacity: 0;
+    animation: var(--animate-scan);
+  }
+  /* Final call to action: sweeps once when the script adds .is-in (no JS or reduced motion = no sweep). */
+  .scanline[data-sweep]::before { animation: none; }
+  .scanline[data-sweep].is-in::before { animation: var(--animate-scan); }
+
+  /* Solid fill inside a .shot-frame when it holds content instead of a screenshot. */
+  .shot-panel {
+    background: var(--color-void);
+    clip-path: polygon(calc(var(--cut) - 0.5px) 0, 100% 0, 100% 100%, 0 100%, 0 calc(var(--cut) - 0.5px));
+  }
+
+  /* Mono readout pinned to a screenshot frame. */
+  .readout {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem 0.625rem;
+    padding: 0.5rem 0.75rem;
+    background: var(--color-void);
+    border: 1px solid var(--color-line-dark);
+    font-family: var(--font-mono);
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 1.3;
+    color: var(--color-text-hi);
+  }
+  @media (min-width: 768px) {
+    .readout { letter-spacing: 0.04em; white-space: nowrap; }
+  }
+  .readout-dot {
+    flex: none;
+    width: 8px;
+    height: 8px;
+    background: var(--color-warn);
+  }
+
+  /* Section heading (H2). Capped at 3rem so it never outgrows the H1. */
+  .h2 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(2rem, 4.2vw, 3rem);
+    line-height: 1.08;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+
+  /* Mono label above a list or block ("FOUND ON A REAL PC"). */
+  .label {
+    font-family: var(--font-mono);
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 1.4;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-text-lo);
+  }
+
+  /* Mono tag: one item in a wrapping row of tags (the 9 checks). */
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    min-height: 40px;
+    padding: 0 0.875rem;
+    border: 1px solid var(--color-line-dark);
+    font-family: var(--font-mono);
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 1.3;
+    color: var(--color-text-hi);
+    white-space: nowrap;
+  }
+
+  /* AI verdict row (section 3): panel, chamfered bottom-right. Action sits right from 640px, below on phones. */
+  .verdict-row {
+    --cut: 16px;
+    display: grid;
+    gap: 1.25rem 2rem;
+    padding: 1.25rem;
+    background: var(--color-panel);
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%);
+  }
+  @media (min-width: 640px) {
+    .verdict-row {
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      padding: 1.5rem 1.75rem;
+    }
+  }
+
+  /* AI verdict badge: mono, coloured by its text colour (signal or scan). */
+  .verdict {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.25rem 0.625rem;
+    border: 1px solid color-mix(in oklab, currentColor 45%, transparent);
+    font-family: var(--font-mono);
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 1.4;
+  }
+  .lock {
+    flex: none;
+    width: 12px;
+    height: 14px;
+  }
+
+  /* Small PRO tag next to a heading (sections 4 and 7). Sized on its own, so it works inside an H2. */
+  .pro {
+    display: inline-block;
+    padding: 0.125rem 0.5rem;
+    border: 1px solid var(--color-scan);
+    font-family: var(--font-mono);
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 1.4;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-scan);
+    vertical-align: 0.6em;
+  }
+
+  /* Picture of the app's "Speed up my computer" button (section 4). Not a control: outlined, so it does not
+     look like the page's green buttons. Outline = ::before in scan, ::after the panel fill inset by 1.5px. */
+  .tap-btn {
+    --cut: 18px;
+    position: relative;
+    isolation: isolate;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    min-height: 72px;
+    padding: 0 1.25rem;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.125rem;
+    line-height: 1.2;
+    color: var(--color-scan);
+    white-space: nowrap;
+    cursor: default;
+    user-select: none;
+  }
+  .tap-btn svg { flex: none; width: 24px; height: 24px; }
+  @media (min-width: 400px) {
+    .tap-btn { font-size: 1.375rem; padding: 0 1.75rem; }
+  }
+  @media (min-width: 768px) {
+    .tap-btn { gap: 0.875rem; min-height: 80px; padding: 0 2.25rem; font-size: 1.625rem; }
+    .tap-btn svg { width: 28px; height: 28px; }
+  }
+  .tap-btn::before,
+  .tap-btn::after {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%);
+  }
+  .tap-btn::before { inset: 0; background: var(--color-scan); }
+  .tap-btn::after {
+    inset: 1.5px;
+    --cut: 17.4px;
+    background: color-mix(in oklab, var(--color-scan) 8%, var(--color-panel));
+  }
+
+  /* 7-step line (section 4): vertical below 1280px (labels wrap to 3 lines in 7 columns at 1024), horizontal from 1280px, joined by a 1px line.
+     Each step's .tick is green; with [data-reveal="tick"] the ticks turn green one by one instead of fading in. */
+  .steps { display: grid; }
+  .step {
+    position: relative;
+    display: grid;
+    grid-template-columns: 28px 1fr;
+    column-gap: 1rem;
+    align-items: start;
+    align-content: start;
+    padding-bottom: 1.25rem;
+  }
+  .step:last-child { padding-bottom: 0; }
+  .step:not(:last-child)::before {
+    content: "";
+    position: absolute;
+    left: 13.5px;
+    top: 28px;
+    bottom: 0;
+    width: 1px;
+    background: var(--color-line-dark);
+  }
+  @media (min-width: 1280px) {
+    .steps { grid-template-columns: repeat(7, minmax(0, 1fr)); }
+    .step {
+      grid-template-columns: none;
+      row-gap: 1rem;
+      padding: 0 1rem 0 0;
+    }
+    .step:not(:last-child)::before {
+      left: 28px;
+      right: 0;
+      top: 13.5px;
+      bottom: auto;
+      width: auto;
+      height: 1px;
+    }
+  }
+  .tick {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border: 1px solid var(--color-scan);
+    background: var(--color-scan);
+    color: var(--color-scan-ink);
+  }
+  .tick svg { width: 14px; height: 14px; }
+  .reveal-ready[data-reveal="tick"] > * { opacity: 1; }
+  .reveal-ready.is-in[data-reveal="tick"] > * { animation: none; }
+  .reveal-ready[data-reveal="tick"] .tick {
+    border-color: var(--color-line-dark);
+    background: transparent;
+    color: transparent;
+  }
+  .reveal-ready.is-in[data-reveal="tick"] .tick {
+    animation: var(--animate-tick);
+    animation-delay: calc(var(--i, 0) * 250ms);
+  }
+
+  /* Staggered reveal. The script adds .reveal-ready to a [data-reveal] list (so nothing is hidden without JS),
+     then .is-in when it scrolls into view. Each child sets its place with style="--i:0", "--i:1", ... */
+  .reveal-ready > * { opacity: 0; }
+  .reveal-ready.is-in > * {
+    animation: var(--animate-reveal);
+    animation-delay: calc(var(--i, 0) * 150ms);
+  }
+
+  /* Safe (section 5): 4 big statements. Stacked with lines between on phones; from 768px an uneven 2x2
+     (7/5 columns) divided by a 1px cross. */
+  .safe-grid { display: grid; }
+  .safe-grid > li { padding-block: 2rem; }
+  .safe-grid > li + li { border-top: 1px solid var(--color-line-dark); }
+  @media (min-width: 768px) {
+    .safe-grid { grid-template-columns: 7fr 5fr; }
+    .safe-grid > li { padding-block: 3rem; }
+    .safe-grid > li + li { border-top: 0; }
+    .safe-grid > li:nth-child(odd) { padding-right: 2.5rem; }
+    .safe-grid > li:nth-child(even) { padding-left: 2.5rem; border-left: 1px solid var(--color-line-dark); }
+    .safe-grid > li:nth-child(n + 3) { border-top: 1px solid var(--color-line-dark); }
+  }
+  @media (min-width: 1024px) {
+    .safe-grid > li { padding-block: 3.5rem; }
+    .safe-grid > li:nth-child(odd) { padding-right: 4rem; }
+    .safe-grid > li:nth-child(even) { padding-left: 4rem; }
+  }
+  .safe-num {
+    display: block;
+    font-family: var(--font-mono);
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 1.4;
+    color: var(--color-signal);
+  }
+  .safe-title {
+    margin-top: 1rem;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(1.75rem, 3vw, 2.25rem);
+    line-height: 1.12;
+    color: var(--color-text-hi);
+    text-wrap: balance;
+  }
+  .safe-line {
+    margin-top: 0.875rem;
+    max-width: 38ch;
+    color: var(--color-text-lo);
+  }
+
+  /* Light sections (6 to 10): ink focus ring; bridge in scan-deep (cyan is too faint on clean). */
+  .on-light :focus-visible { outline-color: var(--color-ink); }
+  .on-light .bridge { color: var(--color-scan-deep); }
+  .on-light .label { color: var(--color-ink-2); }
+  .on-light .pro { border-color: var(--color-scan-deep); color: var(--color-scan-deep); }
+
+  /* Backup (section 7): 3 steps with big outlined numerals joined by a 1px line.
+     Phones: numeral left, line running down to the next step. From 768px: 3 columns, line running right. */
+  .backup-steps { display: grid; }
+  .backup-steps > li {
+    display: grid;
+    grid-template-columns: 4.75rem minmax(0, 1fr);
+    align-content: start;
+    column-gap: 1rem;
+  }
+  .backup-head {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .backup-rule { flex: 1; width: 1px; background: var(--color-line-light); }
+  .backup-steps > li:last-child .backup-rule { display: none; }
+  .backup-body { padding-bottom: 2.5rem; }
+  .backup-steps > li:last-child .backup-body { padding-bottom: 0; }
+  .backup-num {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 3.5rem;
+    line-height: 0.9;
+    letter-spacing: -0.02em;
+    color: transparent;
+    -webkit-text-stroke: 1.5px var(--color-ink);
+  }
+  .backup-num.is-done { color: var(--color-scan-deep); -webkit-text-stroke: 0; }
+  .backup-title {
+    padding-top: 0.25rem;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(1.625rem, 2.6vw, 2.125rem);
+    line-height: 1.15;
+  }
+  .backup-line { margin-top: 0.625rem; max-width: 30ch; color: var(--color-ink-2); text-wrap: pretty; }
+  @media (min-width: 768px) {
+    .backup-steps { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .backup-steps > li { grid-template-columns: none; row-gap: 1.75rem; }
+    .backup-head { flex-direction: row; gap: 1.25rem; }
+    .backup-rule { width: auto; height: 1px; }
+    .backup-body { padding: 0 2rem 0 0; }
+    .backup-num { font-size: clamp(4.5rem, 8vw, 7.5rem); -webkit-text-stroke-width: 2px; }
+    .backup-title { padding-top: 0; }
+  }
+
+  /* Proof (section 6): before/after rows on a white panel, chamfered bottom-right.
+     Phones: label on top, then before -> after. From 768px: 4 columns, with a mono Before / After head. */
+  .proof-table,
+  .proof-inner {
+    --cut: 28px;
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%);
+  }
+  .proof-table { padding: 1px; background: var(--color-line-light); }
+  .proof-inner { --cut: 27.6px; background: var(--color-white); }
+  .proof-row {
+    display: grid;
+    grid-template-columns: auto auto minmax(0, 1fr);
+    align-items: baseline;
+    column-gap: 0.875rem;
+    row-gap: 0.25rem;
+    padding: 1.25rem;
+  }
+  .proof-table li + li { border-top: 1px solid var(--color-line-light); }
+  .proof-label { grid-column: 1 / -1; font-weight: 600; color: var(--color-ink); }
+  .proof-head { display: none; }
+  .proof-before {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(1.25rem, 2.2vw, 1.875rem);
+    line-height: 1.1;
+    color: var(--color-ink-2);
+    white-space: nowrap;
+  }
+  .proof-arrow { font-size: 1.25rem; line-height: 1; color: var(--color-ink-2); }
+  .proof-after {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(2.5rem, 5.6vw, 4.5rem);
+    line-height: 1;
+    letter-spacing: -0.01em;
+    font-variant-numeric: tabular-nums;
+    color: var(--color-scan-deep);
+    white-space: nowrap;
+  }
+  @media (min-width: 768px) {
+    .proof-row {
+      grid-template-columns: minmax(0, 1fr) 9rem 3.5rem 15rem;
+      column-gap: 1rem;
+      padding: 1.5rem 2rem;
+    }
+    .proof-label { grid-column: auto; font-size: 1.125rem; }
+    .proof-before { text-align: right; }
+    .proof-arrow { text-align: center; }
+    .proof-head {
+      display: grid;
+      padding-block: 1.25rem 0.5rem;
+      font-family: var(--font-mono);
+      font-weight: 500;
+      font-size: 14px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--color-ink-2);
+    }
+    .proof-head > :nth-child(2) { text-align: right; }
+    .proof-head + ul { border-top: 1px solid var(--color-line-light); }
+  }
+  @media (min-width: 1024px) {
+    .proof-row { grid-template-columns: minmax(0, 1fr) 11rem 5rem 20rem; padding-inline: 3rem; }
+    .proof-row:not(.proof-head) { padding-block: 1.75rem; }
+    .proof-label { font-size: 1.25rem; }
+  }
+
+  /* vs repair shop (section 8): 2-column rows. Our side sits on a white panel (1px line-light edge, 28px chamfer
+     bottom-right), drawn by ::before (edge) and ::after (fill) so the rows' lines can run across both columns.
+     Phones: the panel covers the whole list and each row stacks shop over ours, with a marker legend on top.
+     From 768px: 2 columns, the panel covers only the right one, and the legend becomes the column heads. */
+  .compare { position: relative; isolation: isolate; }
+  .compare::before,
+  .compare::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    --cut: 28px;
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%);
+  }
+  .compare::before { background: var(--color-line-light); }
+  .compare::after { inset: 1px; --cut: 27.6px; background: var(--color-white); }
+  .compare-head,
+  .compare-row { display: grid; gap: 0.75rem; padding: 1.25rem; }
+  .compare-head {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 1.75rem;
+    padding-bottom: 1rem;
+    font-family: var(--font-mono);
+    font-weight: 500;
+    font-size: 14px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-ink-2);
+  }
+  .compare-head > span,
+  .compare-shop,
+  .compare-ours { display: flex; align-items: flex-start; gap: 0.75rem; }
+  .compare-head > span { align-items: center; gap: 0.625rem; white-space: nowrap; }
+  .compare-head > :last-child { color: var(--color-ink); }
+  .compare-row { border-top: 1px solid var(--color-line-light); }
+  .compare-shop { color: var(--color-ink-2); }
+  .compare-ours {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(1.25rem, 1.9vw, 1.5rem);
+    line-height: 1.25;
+    color: var(--color-ink);
+  }
+  .compare-shop > :last-child,
+  .compare-ours > :last-child { text-wrap: balance; }
+  /* Empty square for the shop, filled green tick for us. Both sit on the first line of their text. */
+  .compare-shop .mark,
+  .compare-head .mark {
+    flex: none;
+    width: 28px;
+    height: 28px;
+    border: 1px solid var(--color-ink-2);
+  }
+  .compare-shop .mark { width: 20px; height: 20px; margin: 4px 4px 0; }
+  .compare-head .mark { width: 16px; height: 16px; }
+  .compare-head .tick { width: 20px; height: 20px; }
+  .compare-head .tick svg { width: 11px; height: 11px; }
+  .compare-ours .tick { flex: none; margin-top: 1px; }
+  .on-light .tick { border-color: var(--color-scan-deep); background: var(--color-scan-deep); color: var(--color-white); }
+  @media (min-width: 768px) {
+    .compare { --split: 50%; }
+    .compare::before,
+    .compare::after { left: var(--split); }
+    .compare::after { left: calc(var(--split) + 1px); }
+    .compare-head,
+    .compare-row { display: grid; grid-template-columns: var(--split) minmax(0, 1fr); gap: 0; padding: 0; }
+    .compare-head > span { padding: 1.5rem 2rem 1rem 0; }
+    .compare-head > :last-child { padding-left: 2.5rem; }
+    .compare-head .mark,
+    .compare-head .tick { display: none; }
+    .compare-shop,
+    .compare-ours { padding: 1.75rem 2rem 1.75rem 0; }
+    .compare-ours { padding-left: 2.5rem; }
+    .compare-shop { font-size: 1.125rem; line-height: 1.5; }
+  }
+  /* In the 8-column strip, our column gets 7 of 12 parts so its bigger text does not wrap. */
+  @media (min-width: 1024px) {
+    .compare { --split: 41.6667%; }
+  }
+
+  /* Pricing (section 9). The headline is the biggest text on the page (plan 3.2). */
+  .price-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(3rem, 9vw, 7.5rem);
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+  /* Free and Pro columns, stacked below 768px. Each is a chamfered panel drawn by ::before (edge) and ::after
+     (fill): Free = 1px line-light edge on clean, Pro = 2px scan edge on white (the focus). */
+  .price-cols { display: grid; gap: 1.5rem; }
+  .price-col {
+    --cut: 28px;
+    position: relative;
+    isolation: isolate;
+    display: flex;
+    flex-direction: column;
+    padding: 2rem 1.25rem 2.5rem;
+  }
+  .price-col::before,
+  .price-col::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%);
+  }
+  .price-col::before { background: var(--color-line-light); }
+  .price-col::after { inset: 1px; --cut: 27.4px; background: var(--color-clean); }
+  .price-pro::before { background: var(--color-scan); }
+  .price-pro::after { inset: 2px; --cut: 26.8px; background: var(--color-white); }
+  .price-name {
+    display: block;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(2.25rem, 3.6vw, 3rem);
+    line-height: 1;
+    color: var(--color-ink);
+  }
+  .price-pro .price-name { color: var(--color-scan-deep); }
+  .price-for {
+    display: block;
+    margin-top: 0.625rem;
+    font-weight: 600;
+    color: var(--color-ink-2);
+  }
+  .price-pro .price-for { color: var(--color-ink); }
+  .price-list { margin-top: 1.75rem; border-bottom: 1px solid var(--color-line-light); }
+  .price-list > li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.875rem;
+    padding-block: 0.75rem;
+    border-top: 1px solid var(--color-line-light);
+    text-wrap: pretty;
+  }
+  .price-list .tick { flex: none; width: 24px; height: 24px; margin-top: 2px; }
+  .price-list .tick svg { width: 12px; height: 12px; }
+  /* Free ticks are outlined so the filled ones mark Pro. */
+  .price-col:not(.price-pro) .tick { background: transparent; color: var(--color-scan-deep); }
+  .price-notes {
+    display: grid;
+    gap: 0.5rem;
+    margin-top: 1.75rem;
+    font-family: var(--font-mono);
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--color-ink-2);
+  }
+  .price-notes > li { display: flex; align-items: flex-start; gap: 0.625rem; }
+  @media (min-width: 768px) {
+    .price-cols { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2rem; }
+    .price-col { padding: 2.5rem 2rem 3rem; }
+  }
+  @media (min-width: 1024px) {
+    .price-col { padding: 3rem 3rem 3.5rem; }
+  }
+
+  /* FAQ (section 10): narrow column of <details> rows (work without JS). Each row is a white panel with a 1px
+     line-light edge and a 12px chamfer bottom-right, drawn by ::before (edge) / ::after (fill) on the <li> so the
+     focus ring is not clipped. Open row: edge turns scan-deep, + turns into −. Questions use Plex Sans Medium Italic,
+     not the display font: this is the part that should sound like a person talking.
+     Open/close slides (0.3 s) through ::details-content and a 0fr -> 1fr grid row; browsers without
+     ::details-content open it at once. .faq-body is the one grid child that gets clipped. */
+  .faq-row {
+    --cut: 12px;
+    position: relative;
+    isolation: isolate;
+  }
+  .faq-row + .faq-row { margin-top: 0.5rem; }
+  .faq-row::before,
+  .faq-row::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%);
+    transition: background-color 0.3s ease;
+  }
+  .faq-row::before { background: var(--color-line-light); }
+  .faq-row::after { inset: 1px; --cut: 11.6px; background: var(--color-white); }
+  .faq-row:has(details[open])::before { background: var(--color-scan-deep); }
+  .faq-row summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    min-height: 64px;
+    padding: 0.875rem 1.25rem;
+    cursor: pointer;
+    list-style: none;
+  }
+  .faq-row summary::-webkit-details-marker { display: none; }
+  .faq-q {
+    font-style: italic;
+    font-weight: 500;
+    font-size: 1.125rem;
+    line-height: 1.4;
+    color: var(--color-ink);
+    text-wrap: balance;
+  }
+  .faq-icon {
+    position: relative;
+    flex: none;
+    width: 28px;
+    height: 28px;
+    border: 1px solid var(--color-line-light);
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+  }
+  .faq-icon::before,
+  .faq-icon::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 12px;
+    height: 2px;
+    margin: -1px 0 0 -6px;
+    background: var(--color-scan-deep);
+    transition: transform 0.3s ease, background-color 0.3s ease;
+  }
+  .faq-icon::after { transform: rotate(90deg); }
+  summary:hover .faq-icon { border-color: var(--color-scan-deep); }
+  details[open] .faq-icon { border-color: var(--color-scan-deep); background: var(--color-scan-deep); }
+  details[open] .faq-icon::before,
+  details[open] .faq-icon::after { background: var(--color-white); }
+  details[open] .faq-icon::after { transform: rotate(0deg); }
+  .faq-row details::details-content {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.3s ease, content-visibility 0.3s allow-discrete;
+  }
+  .faq-row details[open]::details-content { grid-template-rows: 1fr; }
+  .faq-body { min-height: 0; overflow: hidden; }
+  .faq-a {
+    max-width: 60ch;
+    padding: 0 1.25rem 1.25rem;
+    color: var(--color-ink-2);
+    text-wrap: pretty;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  details[open] .faq-a { opacity: 1; }
+  /* Closed content has no style to fade from, so give the open state a starting opacity. */
+  @starting-style { details[open] .faq-a { opacity: 0; } }
+  @media (min-width: 768px) {
+    .faq-row summary { min-height: 72px; padding-inline: 1.75rem; }
+    .faq-a { padding: 0 1.75rem 1.5rem; }
+  }
+
+  /* Footer link: 48px tall row (tap target), quiet until hovered. */
+  .foot-link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 48px;
+    color: var(--color-text-lo);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .foot-link:hover { color: var(--color-text-hi); }
+
+  /* Legal pages (privacy, terms, refund): light, 70-character lines, Plex Sans throughout except the H1.
+     .legal-tabs = Privacy / Terms / Refund row; the current page has aria-current and a scan-deep underline. */
+  .legal-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 1.75rem;
+    border-bottom: 1px solid var(--color-line-light);
+  }
+  .legal-tabs a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 48px;
+    margin-bottom: -1px;
+    border-bottom: 2px solid transparent;
+    font-family: var(--font-mono);
+    font-weight: 500;
+    font-size: 14px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-ink-2);
+    text-decoration: none;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .legal-tabs a:hover { color: var(--color-ink); border-color: var(--color-line-light); }
+  .legal-tabs a[aria-current="page"] { color: var(--color-ink); border-color: var(--color-scan-deep); }
+
+  .legal { max-width: 70ch; color: var(--color-ink); }
+  .legal h2 {
+    margin-top: 3rem;
+    font-size: 1.375rem;
+    font-weight: 600;
+    line-height: 1.3;
+    text-wrap: balance;
+  }
+  .legal p,
+  .legal ul { margin-top: 1rem; }
+  .legal li {
+    position: relative;
+    margin-top: 0.75rem;
+    padding-left: 1.5rem;
+  }
+  .legal li::before {
+    content: "";
+    position: absolute;
+    left: 0.25rem;
+    top: 0.68em;
+    width: 6px;
+    height: 6px;
+    background: var(--color-scan-deep);
+  }
+  .legal strong { font-weight: 600; }
+  .legal a {
+    color: var(--color-scan-deep);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+    overflow-wrap: anywhere;
+  }
+  .legal a:hover { text-decoration-thickness: 2px; }
+
+  /* Mobile menu (<details>, works without JavaScript). */
+  .menu > summary { list-style: none; }
+  .menu > summary::-webkit-details-marker { display: none; }
+  .menu-icon,
+  .menu-icon::before,
+  .menu-icon::after {
+    display: block;
+    width: 20px;
+    height: 1.5px;
+    background: var(--color-text-hi);
+    transition: transform 0.2s ease, opacity 0.2s ease;
+  }
+  .menu-icon { position: relative; }
+  .menu-icon::before,
+  .menu-icon::after {
+    content: "";
+    position: absolute;
+    left: 0;
+  }
+  .menu-icon::before { top: -6px; }
+  .menu-icon::after { top: 6px; }
+  .menu[open] .menu-icon { background: transparent; }
+  .menu[open] .menu-icon::before { transform: translateY(6px) rotate(45deg); }
+  .menu[open] .menu-icon::after { transform: translateY(-6px) rotate(-45deg); }
+}
