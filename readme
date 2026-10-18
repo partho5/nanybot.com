@@ -1,0 +1,34 @@
+Laravel project, react type script - Not spa, easiest frictionless UX for readers and optimised for search engine and LLM. 
+
+Feature:
+placeholder landing page. I will extend later.
+
+Excellent blog system. Super fast loading speed needed. All SEO best practice. 
+Category, tags, author card etc will be implemented. Image lazy loading etc. image caption both for user and search engine optimised. 
+
+One extra feature, webhoook for accepting scheduling article from outside client. Will use API key that can be set from blog admin. 
+
+
+
+---
+How much correct is this: Native lazy loading: <img src="image.jpg" loading="lazy" alt="Description">
+Google can discover the image from the src attribute without needing to scroll to it.
+- JavaScript lazy loading: If the image URL is added to src only after scrolling or a JavaScript event, search engines may not discover it reliably.
+- ---
+
+Take idea from already implemented blog in another project (/home/haku/projects/Laravel/skill-evidence-laravel), only see /blog, no need to waste tken by reading whole project . Before coding make comprehensive plan. 
+
+Mobile view use minimal side padding total. Multiple inner div should not add up too much padding. What about 4px total max? Or 6px? You decide.
+
+Core goal:  creating a blog system that is fastest possible. 
+
+Copy code as much as possible without rewriting. And where needed rewinding must do it.
+
+Currently main focus on the blog system.
+
+----------
+Understand my intent. Restate it back to confirm. Flag any gaps or ambiguities. Ask for my confirmation. Once confirmed, proceed with the work. Finish with a git commit.
+
+create a sharp plan.
+What alternative approaches could have been considered besides the planned implementation? Among them, which approach would best ensure a frictionless UX while achieving the goal?
+What side effects could result from the decision you made? Does it conflict with the core goal or compromise the best possible frictionless UX?
