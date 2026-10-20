@@ -30,18 +30,7 @@ class ArticleWriter
             $data['slug'] = $this->uniqueSlug($data['slug'] ?? $data['title'] ?? $article->title, $article->id);
         }
 
-        if (array_key_exists('body', $data)) {
-            $processed = $this->processor->process((string) $data['body']);
-            $data['body_html'] = $processed->html;
-            $data['toc'] = $processed->toc;
-            $data['faq'] = $processed->faq;
-            $data['word_count'] = $processed->wordCount;
-            $data['read_time_minutes'] = $processed->readTimeMinutes;
-
-            if (empty($data['excerpt']) && empty($article->excerpt) && $processed->firstParagraph) {
-                $data['excerpt'] = Str::limit($processed->firstParagraph, 200, '…');
-            }
-        }
+        $data = $this->processBody($article, $data);
 
         // Status/date rules copied from the reference controller.
         $status = isset($data['status']) ? ArticleStatus::from($data['status'] instanceof ArticleStatus ? $data['status']->value : $data['status']) : $article->status;
@@ -70,6 +59,47 @@ class ArticleWriter
 
             return $article;
         });
+    }
+
+    /**
+     * Fills an in-memory article exactly as save() would (same body to
+     * HTML / TOC / read-time pipeline and sanitisation) but never touches the
+     * database. Used by the unsaved preview; the model is not persisted.
+     *
+     * @param  array<string, mixed>  $data  attributes (tags / publish_at are ignored here)
+     */
+    public function preview(Article $article, array $data): Article
+    {
+        unset($data['tags'], $data['publish_at']);
+
+        return $article->fill($this->processBody($article, $data));
+    }
+
+    /**
+     * Derives body_html, toc, faq, word count, read time and a fallback
+     * excerpt from `body`. No-op when the payload has no body.
+     *
+     * @param  array<string, mixed>  $data
+     * @return array<string, mixed>
+     */
+    private function processBody(Article $article, array $data): array
+    {
+        if (! array_key_exists('body', $data)) {
+            return $data;
+        }
+
+        $processed = $this->processor->process((string) $data['body']);
+        $data['body_html'] = $processed->html;
+        $data['toc'] = $processed->toc;
+        $data['faq'] = $processed->faq;
+        $data['word_count'] = $processed->wordCount;
+        $data['read_time_minutes'] = $processed->readTimeMinutes;
+
+        if (empty($data['excerpt']) && empty($article->excerpt) && $processed->firstParagraph) {
+            $data['excerpt'] = Str::limit($processed->firstParagraph, 200, '…');
+        }
+
+        return $data;
     }
 
     /** Deletes an article; the observer removes its image and flushes the page cache. */

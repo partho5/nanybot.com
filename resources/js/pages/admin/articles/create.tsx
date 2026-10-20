@@ -35,11 +35,11 @@ export default function ArticleCreate({
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="New article" />
 
-            <div className="mx-auto w-full max-w-3xl space-y-6 p-4 md:p-6">
+            <div className="mx-auto w-full max-w-6xl space-y-6 p-4 md:p-6">
                 <FlashMessages />
                 <Heading
                     title="New article"
-                    description="Write a post and publish it now, schedule it, or save it as a draft."
+                    description="Write a post, then publish it now, schedule it, or save it as a draft."
                 />
                 <ArticleForm
                     categories={categories}

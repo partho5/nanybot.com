@@ -1,6 +1,9 @@
 import { Form, Link, router } from '@inertiajs/react';
 import { Pencil, Plus, Trash2 } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import { useState } from 'react';
+import type { ReactNode } from 'react';
+import EmptyState, { focusField } from '@/components/admin/empty-state';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -29,7 +32,10 @@ type Props = {
     destroyUrl: (slug: string) => string;
     /** Admin article list filtered to this row. */
     articlesUrl: (row: TaxonomyRow) => string;
+    /** Empty state: icon, one line, and an action (defaults to focusing the add form). */
+    emptyIcon: LucideIcon;
     emptyMessage: string;
+    emptyAction?: ReactNode;
 };
 
 function Fields({
@@ -152,10 +158,7 @@ function TaxonomyItem({
         <li className="flex items-center gap-4 p-4">
             <div className="min-w-0 flex-1">
                 <p className="truncate font-medium">
-                    <Link
-                        href={articlesUrl(row)}
-                        className="hover:underline"
-                    >
+                    <Link href={articlesUrl(row)} className="hover:underline">
                         {row.name}
                     </Link>
                 </p>
@@ -208,7 +211,9 @@ export default function TaxonomyManager({
     updateForm,
     destroyUrl,
     articlesUrl,
+    emptyIcon,
     emptyMessage,
+    emptyAction,
 }: Props) {
     return (
         <div className="space-y-6">
@@ -232,9 +237,17 @@ export default function TaxonomyManager({
             </div>
 
             {rows.length === 0 ? (
-                <div className="rounded-xl border border-dashed p-10 text-center text-sm text-muted-foreground">
-                    {emptyMessage}
-                </div>
+                <EmptyState
+                    icon={emptyIcon}
+                    message={emptyMessage}
+                    action={
+                        emptyAction ?? (
+                            <Button onClick={() => focusField('name-new')}>
+                                <Plus /> Add a {noun}
+                            </Button>
+                        )
+                    }
+                />
             ) : (
                 <ul className="divide-y rounded-xl border bg-card">
                     {rows.map((row) => (

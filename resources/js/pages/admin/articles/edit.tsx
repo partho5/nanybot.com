@@ -49,13 +49,10 @@ export default function ArticleEdit({
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title={`Edit: ${article.title}`} />
 
-            <div className="mx-auto w-full max-w-3xl space-y-6 p-4 md:p-6">
+            <div className="mx-auto w-full max-w-6xl space-y-6 p-4 md:p-6">
                 <FlashMessages />
                 <div className="flex items-start justify-between gap-4">
-                    <Heading
-                        title="Edit article"
-                        description={`Last updated ${new Date(article.updated_at).toLocaleString()}`}
-                    />
+                    <Heading title="Edit article" />
                     <Button
                         type="button"
                         variant="destructive"

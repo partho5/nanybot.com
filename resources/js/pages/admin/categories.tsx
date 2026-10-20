@@ -1,4 +1,5 @@
 import { Head } from '@inertiajs/react';
+import { FolderTree } from 'lucide-react';
 import FlashMessages from '@/components/admin/flash-messages';
 import TaxonomyManager from '@/components/admin/taxonomy-manager';
 import type { TaxonomyRow } from '@/components/admin/taxonomy-manager';
@@ -34,7 +35,8 @@ export default function Categories({
                     articlesUrl={(row) =>
                         articlesIndex.url({ query: { category: row.id } })
                     }
-                    emptyMessage="No categories yet. Add your first one above."
+                    emptyIcon={FolderTree}
+                    emptyMessage="No categories yet. Every article needs one."
                 />
             </div>
         </AppLayout>

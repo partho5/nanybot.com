@@ -22,6 +22,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         // Articles: authors manage their own, admins everything (ArticlePolicy).
         Route::get('articles/tags', [ArticleController::class, 'tags'])->name('articles.tags');
+        // Unsaved preview: POSTed from the editor into a new tab, never persisted or cached.
+        Route::post('articles/preview', [BlogController::class, 'previewUnsaved'])->middleware('throttle:60,1')->name('articles.preview.unsaved');
         Route::get('articles/{article}/preview', [BlogController::class, 'preview'])->name('articles.preview');
         Route::resource('articles', ArticleController::class)->except('show');
 

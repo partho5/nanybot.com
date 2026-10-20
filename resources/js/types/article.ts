@@ -16,8 +16,14 @@ export type ArticleRow = {
     updated_at: string;
     author: { id: number; name: string } | null;
     category: { id: number; name: string } | null;
+    /** 64x40 (2x) featured image, or null to show the placeholder. */
+    thumbnail_url: string | null;
     public_url: string | null;
+    preview_url: string;
 };
+
+/** Article counts per status tab, within the other active filters. */
+export type StatusCounts = Record<ArticleStatus | 'all', number>;
 
 export type ArticleDetail = {
     id: number;

@@ -12,6 +12,14 @@ import type { Editor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import { common, createLowlight } from 'lowlight';
 import { useCallback, useRef, useState } from 'react';
+import {
+    CALLOUT_VARIANTS,
+    SECTION_VARIANTS,
+} from '@/components/editor/block-palette';
+import type {
+    CalloutVariantKey,
+    SectionVariantKey,
+} from '@/components/editor/block-palette';
 import { Callout } from '@/extensions/callout-extension';
 import { CaptionedImage } from '@/extensions/image-extension';
 import { SectionBlock as SectionBlockExt } from '@/extensions/section-block-extension';
@@ -19,7 +27,6 @@ import { Youtube, extractYoutubeId } from '@/extensions/youtube-extension';
 import { uploadImage } from '@/lib/cloudinary';
 
 const lowlight = createLowlight(common);
-
 
 // ─── Toolbar button ───────────────────────────────────────────────────────────
 
@@ -91,22 +98,6 @@ const HIGHLIGHT_COLORS = [
     '#ff8c00',
     '#ff69b4',
 ];
-const CALLOUT_ACCENT_COLORS: Record<string, string> = {
-    purple: '#7F77DD',
-    amber: '#EF9F27',
-    teal: '#1D9E75',
-    green: '#639922',
-};
-const SECTION_VARIANTS: Record<
-    string,
-    { label: string; bg: string; border: string }
-> = {
-    'hero-dark': { label: 'Dark', bg: '#093464', border: '#0d4080' },
-    'hero-light': { label: 'Blue', bg: '#1709ed', border: '#1207c4' },
-    accent: { label: 'Accent', bg: '#eff6ff', border: '#3b82f6' },
-    bordered: { label: 'Bordered', bg: '#fff7ed', border: '#f97316' },
-};
-
 type ImgPanel = {
     open: boolean;
     uploadedUrl: string;
@@ -148,7 +139,13 @@ const YT_PANEL_CLOSED: YtPanel = {
 const PANEL_CLASSES =
     'border-b border-primary/40 border-l-4 border-l-primary bg-primary/5 dark:bg-primary/10 px-3 py-2 flex flex-wrap items-end gap-3 animate-in fade-in slide-in-from-top-1 duration-200';
 
-function Toolbar({ editor }: { editor: Editor }) {
+function Toolbar({
+    editor,
+    sticky = false,
+}: {
+    editor: Editor;
+    sticky?: boolean;
+}) {
     const colorRef = useRef<HTMLInputElement>(null);
     const highlightRef = useRef<HTMLInputElement>(null);
     const fileRef = useRef<HTMLInputElement>(null);
@@ -308,7 +305,9 @@ function Toolbar({ editor }: { editor: Editor }) {
 
     return (
         <>
-            <div className="flex flex-wrap items-center gap-0.5 rounded-t-md border-b border-border bg-muted/50 px-2 py-1.5">
+            <div
+                className={`flex flex-wrap items-center gap-0.5 rounded-t-md border-b border-border bg-muted px-2 py-1.5 ${sticky ? 'sticky top-0 z-10' : ''}`}
+            >
                 {/* Heading */}
                 <select
                     className="h-6 cursor-pointer rounded border-0 bg-transparent text-xs focus:outline-none"
@@ -631,23 +630,32 @@ function Toolbar({ editor }: { editor: Editor }) {
 
                 {/* Callout */}
                 <div className="flex items-center gap-0.5">
-                    {Object.entries(CALLOUT_ACCENT_COLORS).map(([v, color]) => (
-                        <button
-                            key={v}
-                            type="button"
-                            onMouseDown={(e) => {
-                                e.preventDefault();
-                                editor
-                                    .chain()
-                                    .focus()
-                                    .insertCallout(v as any)
-                                    .run();
-                            }}
-                            title={`Insert ${v} callout`}
-                            className="h-4 w-4 rounded-full border border-border shadow-sm"
-                            style={{ backgroundColor: color }}
-                        />
-                    ))}
+                    {(Object.keys(CALLOUT_VARIANTS) as CalloutVariantKey[]).map(
+                        (v) => {
+                            const { label, bg, rule } = CALLOUT_VARIANTS[v];
+                            return (
+                                <button
+                                    key={v}
+                                    type="button"
+                                    onMouseDown={(e) => {
+                                        e.preventDefault();
+                                        editor
+                                            .chain()
+                                            .focus()
+                                            .insertCallout(v)
+                                            .run();
+                                    }}
+                                    title={`Insert ${label} callout`}
+                                    aria-label={`Insert ${label} callout`}
+                                    className="h-4 w-4 border border-border shadow-sm"
+                                    style={{
+                                        background: bg,
+                                        borderLeft: `3px solid ${rule}`,
+                                    }}
+                                />
+                            );
+                        },
+                    )}
                 </div>
 
                 <Sep />
@@ -657,27 +665,40 @@ function Toolbar({ editor }: { editor: Editor }) {
                     <span className="mr-0.5 text-[10px] text-muted-foreground">
                         Section:
                     </span>
-                    {Object.entries(SECTION_VARIANTS).map(
-                        ([v, { label, bg, border }]) => (
-                            <button
-                                key={v}
-                                type="button"
-                                onMouseDown={(e) => {
-                                    e.preventDefault();
-                                    editor
-                                        .chain()
-                                        .focus()
-                                        .insertSection(v as any)
-                                        .run();
-                                }}
-                                title={`Insert ${label} section`}
-                                className="h-4 w-4 rounded border shadow-sm"
-                                style={{
-                                    backgroundColor: bg,
-                                    borderColor: border,
-                                }}
-                            />
-                        ),
+                    {(Object.keys(SECTION_VARIANTS) as SectionVariantKey[]).map(
+                        (v) => {
+                            const { label, bg, border, topRule } =
+                                SECTION_VARIANTS[v];
+                            return (
+                                <button
+                                    key={v}
+                                    type="button"
+                                    onMouseDown={(e) => {
+                                        e.preventDefault();
+                                        editor
+                                            .chain()
+                                            .focus()
+                                            .insertSection(v)
+                                            .run();
+                                    }}
+                                    title={`Insert ${label} section`}
+                                    aria-label={`Insert ${label} section`}
+                                    className="h-4 w-4 border border-border shadow-sm"
+                                    style={{
+                                        background: bg,
+                                        ...(border !== 'none'
+                                            ? { border }
+                                            : {}),
+                                        ...(topRule
+                                            ? {
+                                                  borderTop:
+                                                      '3px solid var(--blk-brand)',
+                                              }
+                                            : {}),
+                                    }}
+                                />
+                            );
+                        },
                     )}
                 </div>
             </div>
@@ -922,6 +943,8 @@ interface RichTextEditorProps {
     disabled?: boolean;
     placeholder?: string;
     autoFocus?: boolean;
+    /** Writing-canvas mode: tall, grows with the content, toolbar stays in view. */
+    tall?: boolean;
 }
 
 export default function RichTextEditor({
@@ -930,6 +953,7 @@ export default function RichTextEditor({
     disabled = false,
     placeholder,
     autoFocus = false,
+    tall = false,
 }: RichTextEditorProps) {
     const editor = useEditor({
         autofocus: autoFocus ? 'end' : false,
@@ -970,8 +994,10 @@ export default function RichTextEditor({
         <div
             className={`tiptap-editor rounded-md border border-input bg-card text-sm ${disabled ? 'pointer-events-none opacity-50' : ''}`}
         >
-            <Toolbar editor={editor} />
-            <div className="max-h-[60vh] min-h-48 overflow-y-auto rounded-b-md focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-1">
+            <Toolbar editor={editor} sticky={tall} />
+            <div
+                className={`rounded-b-md focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-1 ${tall ? 'min-h-[32rem] lg:min-h-[calc(100svh-14rem)] [&_.ProseMirror]:min-h-[inherit]!' : 'max-h-[60vh] min-h-48 overflow-y-auto'}`}
+            >
                 <EditorContent editor={editor} placeholder={placeholder} />
             </div>
         </div>

@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers\Blog;
 
+use App\Enums\ArticleStatus;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\PreviewArticleRequest;
 use App\Models\Article;
 use App\Models\Category;
 use App\Models\Tag;
 use App\Models\User;
+use App\Services\Blog\ArticleWriter;
 use App\Support\Schema;
 use App\Support\Seo;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -15,12 +18,16 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Str;
 use League\HTMLToMarkdown\HtmlConverter;
 
 class BlogController extends Controller
 {
+    public function __construct(private ArticleWriter $writer) {}
+
     public function index(?int $page = null): View|RedirectResponse
     {
         return $this->listing(
@@ -101,7 +108,7 @@ class BlogController extends Controller
         return view('blog.search', compact('seo', 'q', 'articles'));
     }
 
-    public function show(Article $article): View
+    public function show(Article $article): View|Response
     {
         abort_unless($article->isPublished(), 404);
 
@@ -109,11 +116,61 @@ class BlogController extends Controller
     }
 
     /** Admin preview (auth-protected route in web.php), never cached. */
-    public function preview(Article $article): View
+    public function preview(Article $article): View|Response
     {
         Gate::authorize('update', $article);
 
-        return $this->renderArticle($article, preview: true);
+        return $this->renderArticle($article, preview: true, editUrl: route('admin.articles.edit', $article));
+    }
+
+    /**
+     * Unsaved preview: renders the editor's current form data through the same
+     * body pipeline as a save, entirely in memory. Nothing is persisted, cached
+     * or indexable (POST route, no page cache, noindex).
+     */
+    public function previewUnsaved(PreviewArticleRequest $request): View|Response
+    {
+        $user = $request->user();
+        $data = $request->validated();
+        $saved = $request->editing();
+        $article = $saved ?? new Article;
+        $editUrl = $saved ? route('admin.articles.edit', $saved) : null;
+
+        $title = trim((string) ($data['title'] ?? '')) ?: 'Untitled';
+        $status = ArticleStatus::tryFrom((string) ($data['status'] ?? '')) ?? ArticleStatus::Draft;
+        $publishedAt = match ($status) {
+            ArticleStatus::Published => $saved?->published_at ?? now(),
+            ArticleStatus::Scheduled => isset($data['publish_at']) ? Carbon::parse($data['publish_at']) : null,
+            default => null,
+        };
+        $authorId = $user->isAdmin() && ! empty($data['author_id'])
+            ? (int) $data['author_id']
+            : ($saved?->author_id ?? $user->id);
+
+        $this->writer->preview($article, [
+            'title' => $title,
+            'slug' => Str::slug((string) ($data['slug'] ?? '') ?: $title) ?: 'untitled',
+            'excerpt' => ($data['excerpt'] ?? null) ?: null,
+            'meta_title' => ($data['meta_title'] ?? null) ?: null,
+            'meta_description' => ($data['meta_description'] ?? null) ?: null,
+            'body' => (string) ($data['body'] ?? ''),
+            'featured_image' => ($data['featured_image'] ?? null) ?: null,
+            'featured_image_alt' => ($data['featured_image_alt'] ?? null) ?: null,
+            'featured_image_caption' => ($data['featured_image_caption'] ?? null) ?: null,
+            'author_id' => $authorId,
+            'category_id' => $data['category_id'] ?? null,
+            'status' => $status->value,
+            'published_at' => $publishedAt,
+        ]);
+        $article->updated_at = $saved?->updated_at ?? now();
+
+        $article->setRelation('author', $this->authorWithCount($authorId));
+        $article->setRelation('category', $article->category_id
+            ? Category::query()->find($article->category_id, ['id', 'name', 'slug'])
+            : null);
+        $article->setRelation('tags', $this->unsavedTags($data['tags'] ?? []));
+
+        return $this->renderArticle($article, preview: true, unsaved: true, editUrl: $editUrl);
     }
 
     /** Plain Markdown copy of an article, for LLMs and readers who want raw text. */
@@ -142,13 +199,45 @@ class BlogController extends Controller
         ]);
     }
 
-    private function renderArticle(Article $article, bool $preview = false): View
+    private function authorWithCount(int $id): ?User
     {
-        $article->load([
-            'author:id,name,username,avatar,headline,bio,social_links',
-            'category:id,name,slug',
-            'tags:id,name,slug',
-        ]);
+        return User::query()
+            ->select(['id', 'name', 'username', 'avatar', 'headline', 'bio', 'social_links'])
+            ->withCount(['articles as published_articles_count' => fn ($a) => $a->published()])
+            ->find($id);
+    }
+
+    /**
+     * Tags for an unsaved preview: existing ones by slug, unknown names as
+     * transient models. Never creates rows.
+     *
+     * @param  array<int, string>  $names
+     * @return Collection<int, Tag>
+     */
+    private function unsavedTags(array $names): Collection
+    {
+        $wanted = collect($names)->map(fn ($n) => trim((string) $n))->filter()->unique(fn ($n) => Str::slug($n))->take(20);
+        $known = Tag::query()->whereIn('slug', $wanted->map(fn ($n) => Str::slug($n)))->get(['id', 'name', 'slug'])->keyBy('slug');
+
+        return $wanted
+            ->map(fn ($n) => $known[Str::slug($n)] ?? new Tag(['name' => Str::limit($n, 60, ''), 'slug' => Str::slug($n)]))
+            ->filter(fn (Tag $t) => $t->slug !== '')
+            ->sortBy('name')
+            ->values();
+    }
+
+    private function renderArticle(Article $article, bool $preview = false, bool $unsaved = false, ?string $editUrl = null): View|Response
+    {
+        // An unsaved preview arrives with its relations already set in memory.
+        if (! $unsaved) {
+            $article->load([
+                // Published-article count for the author card: one subquery, no extra round trip.
+                'author' => fn ($q) => $q->select(['id', 'name', 'username', 'avatar', 'headline', 'bio', 'social_links'])
+                    ->withCount(['articles as published_articles_count' => fn ($a) => $a->published()]),
+                'category:id,name,slug',
+                'tags:id,name,slug',
+            ]);
+        }
 
         $url = $article->url();
         $seo = Seo::make($article->metaTitle(), $article->metaDescription(), $url);
@@ -161,7 +250,7 @@ class BlogController extends Controller
             $seo->preloadImage = [
                 'href' => $article->featuredImageUrl(1200),
                 'srcset' => $article->featuredImageSrcset(),
-                'sizes' => '(min-width: 760px) 720px, 100vw',
+                'sizes' => Article::ARTICLE_IMAGE_SIZES,
             ];
         }
 
@@ -195,7 +284,17 @@ class BlogController extends Controller
         $older = Article::published()->where('published_at', '<', $article->published_at ?? now())
             ->latest('published_at')->first(['id', 'title', 'slug']);
 
-        return view('blog.show', compact('article', 'seo', 'related', 'newer', 'older', 'preview'));
+        $view = view('blog.show', compact('article', 'seo', 'related', 'newer', 'older', 'preview', 'unsaved', 'editUrl'));
+
+        if (! $preview) {
+            return $view;
+        }
+
+        // Admin-only and never stored anywhere: not by browsers, proxies or crawlers.
+        return response($view)->withHeaders([
+            'Cache-Control' => 'no-store, private',
+            'X-Robots-Tag' => 'noindex, nofollow',
+        ]);
     }
 
     /** @return Collection<int, Article> */
@@ -206,7 +305,7 @@ class BlogController extends Controller
         return Article::query()
             ->published()
             ->forListing()
-            ->whereKeyNot($article->id)
+            ->when($article->id, fn ($q, $id) => $q->whereKeyNot($id))
             ->where(fn (Builder $q) => $q
                 ->when($article->category_id, fn ($q) => $q->where('category_id', $article->category_id))
                 ->when($tagIds->isNotEmpty(), fn ($q) => $q->orWhereHas('tags', fn ($t) => $t->whereIn('tags.id', $tagIds))))
@@ -261,13 +360,16 @@ class BlogController extends Controller
             $seo->links[] = ['rel' => 'next', 'href' => $pageUrl($page + 1)];
         }
 
+        // Preload the first card's image (the LCP candidate). It must match the
+        // <img> in article-card: the featured slot on page 1, a grid card after.
         $first = $articles->first();
         if ($first?->featured_image) {
+            $featured = $page === 1;
             $seo->image = $first->featuredImageUrl(1200);
             $seo->preloadImage = [
-                'href' => $first->featuredImageUrl(1200),
-                'srcset' => $first->featuredImageSrcset(),
-                'sizes' => '(min-width: 1160px) 1120px, 100vw',
+                'href' => $first->featuredImageUrl($featured ? 1200 : 768, Article::CARD_ASPECT),
+                'srcset' => $first->featuredImageSrcset(Article::CARD_ASPECT),
+                'sizes' => $featured ? Article::FEATURED_SIZES : Article::CARD_SIZES,
             ];
         }
 

@@ -1,15 +1,26 @@
-import { useForm } from '@inertiajs/react';
-import { useState } from 'react';
+import { router, useForm } from '@inertiajs/react';
+import { useEffect, useRef, useState } from 'react';
 import type { FormEvent } from 'react';
-import CloudinaryImageUpload from '@/components/cloudinary-image-upload';
+import ExcerptSection from '@/components/article/excerpt-section';
+import FeaturedImageSection from '@/components/article/featured-image-section';
+import {
+    openUnsavedPreview,
+    parseTags,
+    slugify,
+    toLocalInput,
+} from '@/components/article/form-utils';
+import type { ArticleFormData } from '@/components/article/form-utils';
+import OrganizeSection from '@/components/article/organize-section';
+import PublishSection from '@/components/article/publish-section';
+import SeoSection from '@/components/article/seo-section';
+import SlugField from '@/components/article/slug-field';
+import TitleField from '@/components/article/title-field';
+import UnsavedIndicator from '@/components/article/unsaved-indicator';
 import InputError from '@/components/input-error';
 import RichTextEditor from '@/components/rich-text-editor';
-import TagSuggestions from '@/components/tag-suggestions';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { cn } from '@/lib/utils';
-import { store, tags as tagsRoute, update } from '@/routes/admin/articles';
+import { store, update } from '@/routes/admin/articles';
+import { unsaved } from '@/routes/admin/articles/preview';
 import type {
     ArticleDetail,
     ArticleStatus,
@@ -28,68 +39,7 @@ type Props = {
     onCancel: () => void;
 };
 
-const FIELD =
-    'flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:opacity-50';
-const TEXTAREA =
-    'w-full resize-none rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:opacity-50';
-
-function slugify(value: string): string {
-    return value
-        .toLowerCase()
-        .trim()
-        .replace(/[^a-z0-9\s-]/g, '')
-        .replace(/\s+/g, '-')
-        .replace(/-+/g, '-')
-        .replace(/^-|-$/g, '');
-}
-
-function parseTags(text: string): string[] {
-    const seen = new Set<string>();
-    const result: string[] = [];
-
-    for (const raw of text.split(',')) {
-        const tag = raw.trim();
-
-        if (tag && !seen.has(tag.toLowerCase())) {
-            seen.add(tag.toLowerCase());
-            result.push(tag);
-        }
-    }
-
-    return result;
-}
-
-const pad = (n: number) => String(n).padStart(2, '0');
-
-/** Server sends `Y-m-d\TH:i` in the app timezone (UTC); show it in the browser's local time. */
-function toLocalInput(serverValue: string | null): string {
-    if (!serverValue) {
-        return '';
-    }
-
-    const d = new Date(`${serverValue}:00Z`);
-
-    if (Number.isNaN(d.getTime())) {
-        return '';
-    }
-
-    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
-}
-
-function Counter({ value, max }: { value: string; max: number }) {
-    return (
-        <span
-            className={cn(
-                'text-xs tabular-nums',
-                value.length > max
-                    ? 'text-destructive'
-                    : 'text-muted-foreground',
-            )}
-        >
-            {value.length}/{max}
-        </span>
-    );
-}
+const LEAVE_MESSAGE = 'You have unsaved changes. Leave this page anyway?';
 
 export default function ArticleForm({
     article,
@@ -102,7 +52,7 @@ export default function ArticleForm({
 }: Props) {
     const isEdit = Boolean(article);
 
-    const form = useForm({
+    const form = useForm<ArticleFormData>({
         title: article?.title ?? '',
         slug: article?.slug ?? '',
         excerpt: article?.excerpt ?? '',
@@ -125,6 +75,14 @@ export default function ArticleForm({
     const isScheduled = form.data.status === 'scheduled';
     const isDraft = form.data.status === 'draft';
 
+    // True while our own save request is in flight, so it never triggers the leave guard.
+    const submittingRef = useRef(false);
+    const dirtyRef = useRef(false);
+
+    useEffect(() => {
+        dirtyRef.current = form.isDirty;
+    }, [form.isDirty]);
+
     function onTitleChange(title: string) {
         form.setData((data) => ({
             ...data,
@@ -133,8 +91,12 @@ export default function ArticleForm({
         }));
     }
 
-    function handleSubmit(e: FormEvent) {
-        e.preventDefault();
+    function handleSubmit(e?: FormEvent) {
+        e?.preventDefault();
+
+        if (form.processing) {
+            return;
+        }
 
         form.transform((data) => ({
             ...data,
@@ -148,12 +110,66 @@ export default function ArticleForm({
                     : null,
         }));
 
+        submittingRef.current = true;
+        const options = {
+            onFinish: () => {
+                submittingRef.current = false;
+            },
+        };
+
         if (article) {
-            form.submit(update(article.slug), { preserveScroll: true });
+            form.submit(update(article.slug), {
+                ...options,
+                preserveScroll: true,
+            });
         } else {
-            form.submit(store());
+            form.submit(store(), options);
         }
     }
+
+    // Ctrl/Cmd+S saves with the current status instead of the browser's "Save page".
+    const submitRef = useRef(handleSubmit);
+
+    useEffect(() => {
+        submitRef.current = handleSubmit;
+    });
+
+    useEffect(() => {
+        function onKeyDown(e: KeyboardEvent) {
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
+                e.preventDefault();
+                submitRef.current();
+            }
+        }
+
+        window.addEventListener('keydown', onKeyDown);
+
+        return () => window.removeEventListener('keydown', onKeyDown);
+    }, []);
+
+    // Unsaved-changes guards: in-app (Inertia) navigation and tab close / reload.
+    useEffect(() => {
+        const removeListener = router.on('before', () => {
+            if (!dirtyRef.current || submittingRef.current) {
+                return;
+            }
+
+            return window.confirm(LEAVE_MESSAGE);
+        });
+
+        function onBeforeUnload(e: BeforeUnloadEvent) {
+            if (dirtyRef.current && !submittingRef.current) {
+                e.preventDefault();
+            }
+        }
+
+        window.addEventListener('beforeunload', onBeforeUnload);
+
+        return () => {
+            removeListener();
+            window.removeEventListener('beforeunload', onBeforeUnload);
+        };
+    }, []);
 
     const submitLabel = form.processing
         ? 'Saving…'
@@ -166,337 +182,74 @@ export default function ArticleForm({
               : 'Publish article';
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="space-y-1.5">
-                <Label htmlFor="title">Title *</Label>
-                <Input
-                    id="title"
-                    value={form.data.title}
-                    onChange={(e) => onTitleChange(e.target.value)}
-                    placeholder="Article title"
-                    disabled={form.processing}
-                />
-                <InputError message={form.errors.title} />
-            </div>
+        <form onSubmit={handleSubmit}>
+            <div className="lg:flex lg:items-start lg:gap-8">
+                <div className="min-w-0 flex-1 space-y-4 lg:max-w-[760px]">
+                    <TitleField
+                        value={form.data.title}
+                        onChange={onTitleChange}
+                        error={form.errors.title}
+                        disabled={form.processing}
+                    />
 
-            <div className="space-y-1.5">
-                <Label htmlFor="slug">
-                    Slug
-                    <span className="ml-1 text-xs font-normal text-muted-foreground">
-                        {isEdit
-                            ? '(changing it breaks existing links)'
-                            : '(generated from the title if empty)'}
-                    </span>
-                </Label>
-                <div className="flex items-center gap-2">
-                    <span className="shrink-0 text-sm text-muted-foreground">
-                        /blog/
-                    </span>
-                    <Input
-                        id="slug"
+                    <SlugField
                         value={form.data.slug}
-                        onChange={(e) => {
+                        onChange={(slug) => {
                             setSlugEdited(true);
-                            form.setData(
-                                'slug',
-                                e.target.value
-                                    .toLowerCase()
-                                    .replace(/[^a-z0-9-]/g, '-'),
-                            );
+                            form.setData('slug', slug);
                         }}
-                        placeholder="my-article"
-                        className="font-mono text-sm"
+                        isEdit={isEdit}
+                        error={form.errors.slug}
                         disabled={form.processing}
                     />
-                </div>
-                <InputError message={form.errors.slug} />
-            </div>
 
-            <div className="space-y-1.5">
-                <div className="flex items-center justify-between">
-                    <Label htmlFor="excerpt">
-                        Excerpt
-                        <span className="ml-1 text-xs font-normal text-muted-foreground">
-                            (shown on cards and listings)
-                        </span>
-                    </Label>
-                    <Counter value={form.data.excerpt} max={500} />
-                </div>
-                <textarea
-                    id="excerpt"
-                    rows={3}
-                    value={form.data.excerpt}
-                    onChange={(e) => form.setData('excerpt', e.target.value)}
-                    placeholder="A short summary of the article…"
-                    disabled={form.processing}
-                    className={TEXTAREA}
-                />
-                <InputError message={form.errors.excerpt} />
-            </div>
-
-            <fieldset className="space-y-4 rounded-lg border p-4">
-                <legend className="px-1 text-sm font-medium">SEO</legend>
-
-                <div className="space-y-1.5">
-                    <div className="flex items-center justify-between">
-                        <Label htmlFor="meta_title">
-                            Meta title
-                            <span className="ml-1 text-xs font-normal text-muted-foreground">
-                                (defaults to the title)
-                            </span>
-                        </Label>
-                        <Counter value={form.data.meta_title} max={70} />
-                    </div>
-                    <Input
-                        id="meta_title"
-                        value={form.data.meta_title}
-                        onChange={(e) =>
-                            form.setData('meta_title', e.target.value)
-                        }
-                        disabled={form.processing}
-                    />
-                    <InputError message={form.errors.meta_title} />
-                </div>
-
-                <div className="space-y-1.5">
-                    <div className="flex items-center justify-between">
-                        <Label htmlFor="meta_description">
-                            Meta description
-                            <span className="ml-1 text-xs font-normal text-muted-foreground">
-                                (defaults to the excerpt)
-                            </span>
-                        </Label>
-                        <Counter value={form.data.meta_description} max={200} />
-                    </div>
-                    <textarea
-                        id="meta_description"
-                        rows={2}
-                        value={form.data.meta_description}
-                        onChange={(e) =>
-                            form.setData('meta_description', e.target.value)
-                        }
-                        disabled={form.processing}
-                        className={TEXTAREA}
-                    />
-                    <InputError message={form.errors.meta_description} />
-                </div>
-            </fieldset>
-
-            <fieldset className="space-y-4 rounded-lg border p-4">
-                <legend className="px-1 text-sm font-medium">
-                    Featured image
-                </legend>
-
-                <div className="space-y-1.5">
-                    <CloudinaryImageUpload
-                        value={form.data.featured_image}
-                        onChange={(url) => form.setData('featured_image', url)}
-                        aspectHint="16:9"
-                        disabled={form.processing}
-                    />
-                    <InputError message={form.errors.featured_image} />
-                </div>
-
-                <div className="grid gap-4 sm:grid-cols-2">
-                    <div className="space-y-1.5">
-                        <Label htmlFor="featured_image_alt">
-                            Alt text
-                            <span className="ml-1 text-xs font-normal text-muted-foreground">
-                                (accessibility &amp; SEO)
-                            </span>
-                        </Label>
-                        <Input
-                            id="featured_image_alt"
-                            value={form.data.featured_image_alt}
-                            onChange={(e) =>
-                                form.setData(
-                                    'featured_image_alt',
-                                    e.target.value,
-                                )
-                            }
-                            placeholder="Describe the image…"
+                    <div className="space-y-1.5 pt-2">
+                        <RichTextEditor
+                            tall
+                            value={form.data.body}
+                            onChange={(v) => form.setData('body', v)}
+                            placeholder="Start writing…"
                             disabled={form.processing}
                         />
-                        <InputError message={form.errors.featured_image_alt} />
-                    </div>
-
-                    <div className="space-y-1.5">
-                        <Label htmlFor="featured_image_caption">
-                            Caption
-                            <span className="ml-1 text-xs font-normal text-muted-foreground">
-                                (shown under the image)
-                            </span>
-                        </Label>
-                        <Input
-                            id="featured_image_caption"
-                            value={form.data.featured_image_caption}
-                            onChange={(e) =>
-                                form.setData(
-                                    'featured_image_caption',
-                                    e.target.value,
-                                )
-                            }
-                            disabled={form.processing}
-                        />
-                        <InputError
-                            message={form.errors.featured_image_caption}
-                        />
+                        <InputError message={form.errors.body} />
                     </div>
                 </div>
-            </fieldset>
 
-            <div className="space-y-1.5">
-                <Label>Tags</Label>
-                <TagSuggestions
-                    value={form.data.tags}
-                    onChange={(v) => form.setData('tags', v)}
-                    tagsUrl={tagsRoute.url()}
-                />
-                <InputError
-                    message={
-                        form.errors.tags ??
-                        Object.entries(form.errors).find(([k]) =>
-                            k.startsWith('tags.'),
-                        )?.[1]
-                    }
-                />
-            </div>
-
-            <div className="grid gap-4 sm:grid-cols-2">
-                <div className="space-y-1.5">
-                    <Label htmlFor="category_id">Category</Label>
-                    <select
-                        id="category_id"
-                        value={form.data.category_id}
-                        onChange={(e) =>
-                            form.setData('category_id', e.target.value)
-                        }
-                        disabled={form.processing}
-                        className={FIELD}
-                    >
-                        <option value="">No category</option>
-                        {categories.map((cat) => (
-                            <option key={cat.id} value={String(cat.id)}>
-                                {cat.name}
-                            </option>
-                        ))}
-                    </select>
-                    <InputError message={form.errors.category_id} />
-                </div>
-
-                {isAdmin && (
-                    <div className="space-y-1.5">
-                        <Label htmlFor="author_id">Author</Label>
-                        <select
-                            id="author_id"
-                            value={form.data.author_id}
-                            onChange={(e) =>
-                                form.setData('author_id', e.target.value)
-                            }
-                            disabled={form.processing}
-                            className={FIELD}
-                        >
-                            {authors.map((a) => (
-                                <option key={a.id} value={String(a.id)}>
-                                    {a.name}
-                                </option>
-                            ))}
-                        </select>
-                        <InputError message={form.errors.author_id} />
-                    </div>
-                )}
-
-                <div className="space-y-1.5">
-                    <Label htmlFor="status">Status</Label>
-                    <select
-                        id="status"
-                        value={form.data.status}
-                        onChange={(e) =>
-                            form.setData(
-                                'status',
-                                e.target.value as ArticleStatus,
+                <aside
+                    aria-label="Article settings"
+                    className="mt-8 space-y-4 lg:sticky lg:top-4 lg:-m-1 lg:mt-0 lg:max-h-[calc(100svh-2rem)] lg:w-80 lg:shrink-0 lg:overflow-y-auto lg:p-1"
+                >
+                    <PublishSection
+                        form={form}
+                        article={article}
+                        statuses={statuses}
+                        submitLabel={submitLabel}
+                        onCancel={onCancel}
+                        onPreview={() =>
+                            openUnsavedPreview(
+                                unsaved.url(),
+                                form.data,
+                                article?.id,
                             )
                         }
-                        disabled={form.processing}
-                        className={FIELD}
-                    >
-                        {statuses.map((s) => (
-                            <option key={s.value} value={s.value}>
-                                {s.label}
-                            </option>
-                        ))}
-                    </select>
-                    <InputError message={form.errors.status} />
-                </div>
-
-                {isScheduled && (
-                    <div className="space-y-1.5">
-                        <Label htmlFor="publish_at">
-                            Publish at *
-                            <span className="ml-1 text-xs font-normal text-muted-foreground">
-                                (your local time)
-                            </span>
-                        </Label>
-                        <Input
-                            id="publish_at"
-                            type="datetime-local"
-                            value={form.data.publish_at}
-                            onChange={(e) =>
-                                form.setData('publish_at', e.target.value)
-                            }
-                            disabled={form.processing}
-                        />
-                        <InputError message={form.errors.publish_at} />
-                    </div>
-                )}
+                    />
+                    <FeaturedImageSection form={form} />
+                    <OrganizeSection
+                        form={form}
+                        categories={categories}
+                        authors={authors}
+                        isAdmin={isAdmin}
+                    />
+                    <ExcerptSection form={form} />
+                    <SeoSection form={form} />
+                </aside>
             </div>
 
-            <div className="space-y-1.5">
-                <Label>Content *</Label>
-                <RichTextEditor
-                    value={form.data.body}
-                    onChange={(v) => form.setData('body', v)}
-                    placeholder="Start writing…"
-                    disabled={form.processing}
-                />
-                <InputError message={form.errors.body} />
-            </div>
-
-            <div className="flex flex-wrap items-center gap-3 pt-2">
+            {/* Below lg the sidebar sits after the editor, so keep Save in reach. */}
+            <div className="sticky bottom-0 z-20 -mx-4 mt-6 flex items-center justify-between gap-3 border-t bg-background/95 px-4 py-3 backdrop-blur md:-mx-6 md:px-6 lg:hidden">
+                {form.isDirty ? <UnsavedIndicator /> : <span />}
                 <Button type="submit" disabled={form.processing}>
                     {submitLabel}
-                </Button>
-                {article && (
-                    <>
-                        <Button type="button" variant="secondary" asChild>
-                            <a
-                                href={article.preview_url}
-                                target="_blank"
-                                rel="noopener"
-                            >
-                                Preview saved version
-                            </a>
-                        </Button>
-                        {article.public_url && (
-                            <Button type="button" variant="outline" asChild>
-                                <a
-                                    href={article.public_url}
-                                    target="_blank"
-                                    rel="noopener"
-                                >
-                                    View live
-                                </a>
-                            </Button>
-                        )}
-                    </>
-                )}
-                <Button
-                    type="button"
-                    variant="ghost"
-                    onClick={onCancel}
-                    disabled={form.processing}
-                >
-                    Cancel
                 </Button>
             </div>
         </form>

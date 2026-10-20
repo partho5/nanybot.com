@@ -50,18 +50,32 @@ class ArticleController extends Controller
             'author' => $user->isAdmin() ? $request->query('author') : null,
         ];
 
-        $articles = Article::query()
+        // Every filter except status; the status tabs count within this scope.
+        $scoped = Article::query()
+            ->when(! $user->isAdmin(), fn ($q) => $q->where('author_id', $user->id))
+            ->when($filters['author'], fn ($q, $id) => $q->where('author_id', (int) $id))
+            ->when($filters['category'], fn ($q, $id) => $q->where('category_id', (int) $id))
+            ->when($filters['tag'], fn ($q, $slug) => $q->whereHas('tags', fn ($t) => $t->where('tags.slug', $slug)))
+            ->when($filters['q'] !== '', fn ($q) => $q->where('title', 'ilike', '%'.addcslashes($filters['q'], '%_\\').'%'));
+
+        // One grouped query for all tab counts.
+        $byStatus = (clone $scoped)->toBase()
+            ->selectRaw('status, count(*) as aggregate')
+            ->groupBy('status')
+            ->pluck('aggregate', 'status');
+
+        $counts = ['all' => (int) $byStatus->sum()];
+        foreach (ArticleStatus::cases() as $status) {
+            $counts[$status->value] = (int) ($byStatus[$status->value] ?? 0);
+        }
+
+        $articles = $scoped
             ->select([
-                'id', 'author_id', 'category_id', 'title', 'slug', 'status',
+                'id', 'author_id', 'category_id', 'title', 'slug', 'status', 'featured_image',
                 'read_time_minutes', 'published_at', 'created_at', 'updated_at',
             ])
             ->with(['author:id,name,username', 'category:id,name,slug'])
-            ->when(! $user->isAdmin(), fn ($q) => $q->where('author_id', $user->id))
-            ->when($filters['author'], fn ($q, $id) => $q->where('author_id', (int) $id))
             ->when(ArticleStatus::tryFrom((string) $filters['status']), fn ($q, $s) => $q->where('status', $s->value))
-            ->when($filters['category'], fn ($q, $id) => $q->where('category_id', (int) $id))
-            ->when($filters['tag'], fn ($q, $slug) => $q->whereHas('tags', fn ($t) => $t->where('tags.slug', $slug)))
-            ->when($filters['q'] !== '', fn ($q) => $q->where('title', 'ilike', '%'.addcslashes($filters['q'], '%_\\').'%'))
             ->latest('updated_at')
             ->paginate(self::PER_PAGE)
             ->withQueryString()
@@ -75,8 +89,11 @@ class ArticleController extends Controller
                 'updated_at' => $a->updated_at?->toIso8601String(),
                 'author' => $a->author ? ['id' => $a->author->id, 'name' => $a->author->name] : null,
                 'category' => $a->category ? ['id' => $a->category->id, 'name' => $a->category->name] : null,
+                // 64x40 list thumbnail, 2x for retina (Cloudinary crop; other URLs untouched).
+                'thumbnail_url' => $a->featuredImageUrl(128, '16:10'),
                 // Public URL only once visible on the site; otherwise use the preview route.
                 'public_url' => $a->isPublished() ? $a->url() : null,
+                'preview_url' => route('admin.articles.preview', $a),
             ]);
 
         return Inertia::render('admin/articles/index', [
@@ -85,6 +102,7 @@ class ArticleController extends Controller
             'categories' => $this->categoryOptions(),
             'authors' => $user->isAdmin() ? $this->authorOptions() : [],
             'statuses' => $this->statusOptions(),
+            'counts' => $counts,
             'isAdmin' => $user->isAdmin(),
         ]);
     }

@@ -17,6 +17,18 @@ return [
     'per_page' => 12,
 
     /*
+    | Product call-to-action shown after every article body (blog/show).
+    | Plain text only; URLs may be relative to the site root.
+    */
+    'cta' => [
+        'eyebrow' => 'NanyBot',
+        'headline' => 'Repeated tasks? Automate them.',
+        'text' => 'Our software runs the work your team repeats every day, so you can spend the time on customers.',
+        'primary' => ['label' => 'See the software', 'url' => '/#software'],
+        'secondary' => ['label' => 'Tell us what you repeat', 'url' => '/contact'],
+    ],
+
+    /*
     | Single-segment paths under /blog/ that are routes, not article slugs.
     */
     'reserved_slugs' => Article::RESERVED_SLUGS,

@@ -1,5 +1,6 @@
 import { Form, Head, router, usePage } from '@inertiajs/react';
 import { Check, Copy, KeyRound, Plus, TriangleAlert } from 'lucide-react';
+import EmptyState, { focusField } from '@/components/admin/empty-state';
 import FlashMessages from '@/components/admin/flash-messages';
 import NativeSelect from '@/components/admin/native-select';
 import Heading from '@/components/heading';
@@ -151,11 +152,15 @@ export default function ApiKeys({ apiKeys, users }: Props) {
                 </div>
 
                 {apiKeys.length === 0 ? (
-                    <div className="rounded-xl border border-dashed p-10 text-center text-sm text-muted-foreground">
-                        <KeyRound className="mx-auto mb-2 size-5" />
-                        No API keys yet. Create one above to start using the
-                        webhook.
-                    </div>
+                    <EmptyState
+                        icon={KeyRound}
+                        message="No API keys yet. Create one to publish through the webhook."
+                        action={
+                            <Button onClick={() => focusField('key-name')}>
+                                <Plus /> Create a key
+                            </Button>
+                        }
+                    />
                 ) : (
                     <ul className="divide-y rounded-xl border bg-card">
                         {apiKeys.map((key) => (

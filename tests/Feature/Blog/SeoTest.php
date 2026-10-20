@@ -96,6 +96,20 @@ class SeoTest extends TestCase
         $this->assertCount(1, $this->jsonLdOfType($html, 'WebSite'));
     }
 
+    /** Article pages ship exactly one small inline enhancement script (no src, no libraries). */
+    private function articleScripts(string $uri): int
+    {
+        $html = $this->get($uri)->getContent();
+        $xpath = $this->dom($html);
+        $scripts = $xpath->query("//script[not(@type='application/ld+json')]");
+        foreach ($scripts as $script) {
+            $this->assertNull($script->attributes->getNamedItem('src'), "External script on {$uri}");
+            $this->assertLessThan(4000, strlen($script->textContent), "Inline script too large on {$uri}");
+        }
+
+        return $scripts->length;
+    }
+
     public function test_public_pages_ship_no_javascript_except_json_ld(): void
     {
         $tag = Tag::where('name', 'Gears')->firstOrFail();
@@ -111,7 +125,8 @@ class SeoTest extends TestCase
 
         foreach ($uris as $uri) {
             $html = $this->get($uri)->assertOk()->getContent();
-            $this->assertSame(0, $this->nonJsonLdScripts($html), "Unexpected <script> on {$uri}");
+            $expected = $uri === "/blog/{$this->article->slug}" ? 1 : 0;
+            $this->assertSame($expected, $this->nonJsonLdScripts($html), "Unexpected <script> on {$uri}");
             $this->assertGreaterThanOrEqual(1, count($this->jsonLdBlocks($html)), "No JSON-LD on {$uri}");
             $this->assertDoesNotMatchRegularExpression('/\son[a-z]+\s*=/i', $this->stripJsonLd($html), "Inline handler on {$uri}");
         }
@@ -207,7 +222,7 @@ class SeoTest extends TestCase
         }
         $html = $this->get("/blog/{$article->slug}")->getContent();
         $this->assertStringContainsString('Dangerous &lt;script&gt;', $html);
-        $this->assertSame(0, $this->nonJsonLdScripts($html));
+        $this->assertSame(1, $this->articleScripts("/blog/{$article->slug}"));
         $this->jsonLdBlocks($html); // still valid JSON-LD
 
         $q = '<script>alert(1)</script>';

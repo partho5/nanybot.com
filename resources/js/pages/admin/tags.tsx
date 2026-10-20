@@ -1,5 +1,5 @@
 import { Head, router } from '@inertiajs/react';
-import { Search } from 'lucide-react';
+import { Search, Tags as TagsIcon } from 'lucide-react';
 import { useState } from 'react';
 import FlashMessages from '@/components/admin/flash-messages';
 import PaginationNav from '@/components/admin/pagination-nav';
@@ -33,6 +33,11 @@ export default function Tags({
         });
     }
 
+    function clearSearch() {
+        setQ('');
+        router.get(index.url());
+    }
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Tags" />
@@ -59,10 +64,7 @@ export default function Tags({
                         <Button
                             type="button"
                             variant="ghost"
-                            onClick={() => {
-                                setQ('');
-                                router.get(index.url());
-                            }}
+                            onClick={clearSearch}
                         >
                             Clear
                         </Button>
@@ -78,10 +80,18 @@ export default function Tags({
                     articlesUrl={(row) =>
                         articlesIndex.url({ query: { tag: row.slug } })
                     }
+                    emptyIcon={TagsIcon}
                     emptyMessage={
                         filters.q
                             ? `No tags match "${filters.q}".`
-                            : 'No tags yet. Add your first one above.'
+                            : 'No tags yet. Add one here or type it in the editor.'
+                    }
+                    emptyAction={
+                        filters.q ? (
+                            <Button variant="outline" onClick={clearSearch}>
+                                Clear search
+                            </Button>
+                        ) : undefined
                     }
                 />
 

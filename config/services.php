@@ -43,4 +43,6 @@ return [
         'folder' => env('CLOUDINARY_FOLDER', 'nanybot'),
     ],
 
+    'contact_email' => env('SERVICE_CONTACT_EMAIL'),
+
 ];

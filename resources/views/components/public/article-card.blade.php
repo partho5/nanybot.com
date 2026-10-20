@@ -1,51 +1,63 @@
-@props(['article', 'eager' => false, 'hero' => false])
+{{--
+    Listing card. The title link is stretched over the whole card (after:inset-0);
+    category + author links sit above it (relative z-10) and stay clickable.
+    featured: split layout from md (media 7/12, text 5/12), used for the first item on page 1.
+    eager: LCP candidate (the controller preloads the same src/srcset/sizes).
+--}}
+@props(['article', 'eager' => false, 'featured' => false, 'sizes' => null, 'heading' => 'h2'])
 @php
-    $img = $article->featured_image;
-    $sizes = $hero
-        ? '(min-width: 1160px) 1120px, 100vw'
-        : '(min-width: 1160px) 360px, (min-width: 640px) 50vw, 100vw';
-    $imgWidth = $hero ? 1200 : 768;
-    $imgHeight = $hero ? 675 : 432;
+    use App\Models\Article;
+
+    $sizes ??= $featured ? Article::FEATURED_SIZES : Article::CARD_SIZES;
+    $imgWidth = $featured ? 1200 : 768;
+    $imgHeight = (int) round($imgWidth * 10 / 16);
+    $meta = 'font-mono text-[0.6875rem] font-medium uppercase leading-normal tracking-[0.08em]';
 @endphp
-<article {{ $attributes->class(['group flex flex-col']) }}>
-    @if ($img)
-        <a href="{{ $article->url() }}" tabindex="-1" aria-hidden="true" class="bleed block overflow-hidden bg-soft md:rounded-lg">
+<article {{ $attributes->class(['group relative', 'grid gap-6 md:grid-cols-[7fr_5fr] md:items-center md:gap-10' => $featured, 'flex flex-col' => ! $featured]) }}>
+    @if ($article->featured_image)
+        <div class="relative aspect-[16/10] overflow-hidden bg-soft">
             <img
-                src="{{ $article->featuredImageUrl($imgWidth) }}"
-                @if ($srcset = $article->featuredImageSrcset()) srcset="{{ $srcset }}" sizes="{{ $sizes }}" @endif
+                src="{{ $article->featuredImageUrl($imgWidth, Article::CARD_ASPECT) }}"
+                @if ($srcset = $article->featuredImageSrcset(Article::CARD_ASPECT)) srcset="{{ $srcset }}" sizes="{{ $sizes }}" @endif
                 width="{{ $imgWidth }}" height="{{ $imgHeight }}"
                 alt="{{ $article->featured_image_alt ?: '' }}"
                 @if ($eager) loading="eager" fetchpriority="high" @else loading="lazy" @endif
                 decoding="async"
-                class="aspect-video w-full object-cover {{ $hero ? 'md:aspect-[2/1]' : '' }}">
-        </a>
+                class="size-full object-cover transition-transform duration-300 ease-out group-hover:scale-[1.03] motion-reduce:transition-none motion-reduce:group-hover:scale-100">
+        </div>
+    @else
+        <x-public.cover :article="$article" />
     @endif
 
-    <div class="flex flex-1 flex-col gap-2 pt-3">
-        @if ($article->category)
-            <p class="text-xs font-semibold uppercase tracking-wide text-brand">
-                <a href="{{ $article->category->url() }}">{{ $article->category->name }}</a>
-            </p>
-        @endif
+    <div @class(['flex flex-1 flex-col border-t border-line', 'pt-5 md:pt-6' => $featured, 'mt-5 pt-4' => ! $featured])>
+        <p class="{{ $meta }} text-muted">
+            @if ($article->category)
+                <a href="{{ $article->category->url() }}" class="relative z-10 text-brand underline-offset-4 hover:underline">{{ $article->category->name }}</a>
+                <span aria-hidden="true" class="mx-1">&middot;</span>
+            @endif
+            {{ $article->read_time_minutes }} min read
+        </p>
 
-        <h2 class="{{ $hero ? 'text-2xl md:text-3xl' : 'text-lg' }} font-bold leading-snug tracking-tight">
-            <a href="{{ $article->url() }}" class="hover:text-brand">{{ $article->title }}</a>
-        </h2>
+        <{{ $heading }} @class([
+            'mt-3 font-extrabold tracking-tight text-balance',
+            'text-3xl leading-[1.1] md:text-4xl' => $featured,
+            'text-xl leading-snug' => ! $featured,
+        ])>
+            <a href="{{ $article->url() }}" class="decoration-brand decoration-2 underline-offset-4 group-hover:underline focus-visible:underline after:absolute after:inset-0">{{ $article->title }}</a>
+        </{{ $heading }}>
 
         @if ($article->excerpt)
-            <p class="text-muted {{ $hero ? '' : 'text-sm' }}">{{ \Illuminate\Support\Str::limit($article->excerpt, $hero ? 220 : 140) }}</p>
+            <p @class(['mt-3 text-muted', 'line-clamp-3 text-lg' => $featured, 'line-clamp-2 text-[0.9375rem]' => ! $featured])>{{ \Illuminate\Support\Str::limit($article->excerpt, 300) }}</p>
         @endif
 
-        <p class="mt-auto pt-1 text-xs text-muted">
+        <p @class(['text-sm text-muted', 'mt-5' => $featured, 'mt-auto pt-4' => ! $featured])>
             @if ($article->author)
-                <a href="{{ $article->author->authorUrl() }}" class="font-medium text-ink hover:text-brand">{{ $article->author->name }}</a>
-                <span aria-hidden="true">&middot;</span>
+                <a href="{{ $article->author->authorUrl() }}" class="relative z-10 font-medium text-ink underline-offset-4 hover:underline">{{ $article->author->name }}</a>
+                @if ($article->published_at)<span aria-hidden="true" class="mx-1">&middot;</span>@endif
             @endif
             @if ($article->published_at)
                 <time datetime="{{ $article->published_at->toAtomString() }}">{{ $article->published_at->format('M j, Y') }}</time>
-                <span aria-hidden="true">&middot;</span>
             @endif
-            {{ $article->read_time_minutes }} min read
         </p>
     </div>
 </article>

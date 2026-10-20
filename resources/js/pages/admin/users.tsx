@@ -1,6 +1,14 @@
 import { Form, Head, Link, router, usePage } from '@inertiajs/react';
-import { Pencil, Plus, Search, Trash2 } from 'lucide-react';
+import {
+    Pencil,
+    Plus,
+    Search,
+    SearchX,
+    Trash2,
+    Users as UsersIcon,
+} from 'lucide-react';
 import { useState } from 'react';
+import EmptyState, { focusField } from '@/components/admin/empty-state';
 import FlashMessages from '@/components/admin/flash-messages';
 import NativeSelect from '@/components/admin/native-select';
 import PaginationNav from '@/components/admin/pagination-nav';
@@ -49,6 +57,11 @@ export default function Users({ users, filters, roles }: Props) {
             preserveState: true,
             replace: true,
         });
+    }
+
+    function clearSearch() {
+        setQ('');
+        router.get(index.url());
     }
 
     function remove(user: UserRow) {
@@ -175,10 +188,7 @@ export default function Users({ users, filters, roles }: Props) {
                         <Button
                             type="button"
                             variant="ghost"
-                            onClick={() => {
-                                setQ('');
-                                router.get(index.url());
-                            }}
+                            onClick={clearSearch}
                         >
                             Clear
                         </Button>
@@ -186,11 +196,27 @@ export default function Users({ users, filters, roles }: Props) {
                 </form>
 
                 {users.data.length === 0 ? (
-                    <div className="rounded-xl border border-dashed p-10 text-center text-sm text-muted-foreground">
-                        {filters.q
-                            ? `No authors match "${filters.q}".`
-                            : 'No authors yet.'}
-                    </div>
+                    filters.q ? (
+                        <EmptyState
+                            icon={SearchX}
+                            message={`No authors match "${filters.q}".`}
+                            action={
+                                <Button variant="outline" onClick={clearSearch}>
+                                    Clear search
+                                </Button>
+                            }
+                        />
+                    ) : (
+                        <EmptyState
+                            icon={UsersIcon}
+                            message="No authors yet. Invite someone to write."
+                            action={
+                                <Button onClick={() => focusField('new-name')}>
+                                    <Plus /> Add an author
+                                </Button>
+                            }
+                        />
+                    )
                 ) : (
                     <ul className="divide-y rounded-xl border bg-card">
                         {users.data.map((user) => (

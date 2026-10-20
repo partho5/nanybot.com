@@ -1,12 +1,25 @@
 import { Head, Link, router } from '@inertiajs/react';
-import { Plus } from 'lucide-react';
+import {
+    Eye,
+    ExternalLink,
+    FileText,
+    Pencil,
+    Plus,
+    SearchX,
+    Trash2,
+} from 'lucide-react';
 import { useState } from 'react';
-import type { FormEvent } from 'react';
+import type { FormEvent, ReactNode } from 'react';
+import EmptyState from '@/components/admin/empty-state';
 import FlashMessages from '@/components/flash-messages';
-import Heading from '@/components/heading';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipTrigger,
+} from '@/components/ui/tooltip';
 import AppLayout from '@/layouts/app-layout';
 import { cn } from '@/lib/utils';
 import { create, destroy, edit, index } from '@/routes/admin/articles';
@@ -17,7 +30,7 @@ import type {
     AuthorOption,
     CategoryOption,
     Paginated,
-    StatusOption,
+    StatusCounts,
 } from '@/types/article';
 
 const breadcrumbs: BreadcrumbItem[] = [{ title: 'Articles', href: index() }];
@@ -35,30 +48,147 @@ type Props = {
     filters: Filters;
     categories: CategoryOption[];
     authors: AuthorOption[];
-    statuses: StatusOption[];
+    counts: StatusCounts;
     isAdmin: boolean;
 };
 
 const SELECT =
-    'h-9 rounded-md border border-input bg-background px-3 py-1 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50';
+    'h-9 min-w-0 flex-1 rounded-md border border-input bg-background px-3 py-1 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 sm:flex-none';
 
-const STATUS_VARIANT: Record<
-    ArticleStatus,
-    'default' | 'secondary' | 'outline'
-> = {
-    published: 'default',
-    scheduled: 'secondary',
-    draft: 'outline',
+const TABS: { status: ArticleStatus | null; label: string }[] = [
+    { status: null, label: 'All' },
+    { status: 'published', label: 'Published' },
+    { status: 'scheduled', label: 'Scheduled' },
+    { status: 'draft', label: 'Drafts' },
+];
+
+const STATUS_LABEL: Record<ArticleStatus, string> = {
+    published: 'Published',
+    scheduled: 'Scheduled',
+    draft: 'Draft',
 };
 
-function formatDate(iso: string | null): string {
-    return iso
-        ? new Date(iso).toLocaleDateString(undefined, {
-              day: 'numeric',
-              month: 'short',
-              year: 'numeric',
-          })
-        : '';
+/** Colour is a hint only; the label always carries the meaning. */
+const STATUS_DOT: Record<ArticleStatus, string> = {
+    published: 'bg-emerald-600 dark:bg-emerald-400',
+    scheduled: 'bg-brand',
+    draft: 'border border-muted-foreground',
+};
+
+function absoluteDate(iso: string): string {
+    return new Date(iso).toLocaleString(undefined, {
+        dateStyle: 'medium',
+        timeStyle: 'short',
+    });
+}
+
+function shortDate(iso: string): string {
+    const date = new Date(iso);
+
+    return date.toLocaleDateString(undefined, {
+        day: 'numeric',
+        month: 'short',
+        year:
+            date.getFullYear() === new Date().getFullYear()
+                ? undefined
+                : 'numeric',
+    });
+}
+
+/** "just now", "5m ago", "3h ago", "2d ago", then a short date. */
+function timeAgo(iso: string): string {
+    const seconds = Math.max(
+        0,
+        Math.round((Date.now() - new Date(iso).getTime()) / 1000),
+    );
+
+    if (seconds < 60) {
+        return 'just now';
+    }
+
+    if (seconds < 3600) {
+        return `${Math.floor(seconds / 60)}m ago`;
+    }
+
+    if (seconds < 86400) {
+        return `${Math.floor(seconds / 3600)}h ago`;
+    }
+
+    if (seconds < 86400 * 30) {
+        return `${Math.floor(seconds / 86400)}d ago`;
+    }
+
+    return shortDate(iso);
+}
+
+function Thumbnail({ article }: { article: ArticleRow }) {
+    const [failed, setFailed] = useState(false);
+
+    if (article.thumbnail_url && !failed) {
+        return (
+            <img
+                src={article.thumbnail_url}
+                onError={() => setFailed(true)}
+                alt=""
+                width={64}
+                height={40}
+                loading="lazy"
+                className="h-10 w-16 shrink-0 rounded-sm bg-muted object-cover"
+            />
+        );
+    }
+
+    const initial = (article.category?.name ?? article.title).trim().charAt(0);
+
+    return (
+        <span
+            aria-hidden="true"
+            className="flex h-10 w-16 shrink-0 items-center justify-center rounded-sm border bg-secondary font-mono text-xs font-medium text-muted-foreground uppercase"
+        >
+            {initial || '·'}
+        </span>
+    );
+}
+
+const ACTION =
+    'size-8 text-muted-foreground hover:text-foreground lg:w-auto lg:px-2.5';
+
+/**
+ * Always-visible, subdued row action. Icon + text from lg up; icon-only below,
+ * named by the aria-label on the rendered element, with a tooltip.
+ */
+function RowAction({
+    label,
+    icon,
+    render,
+    className,
+}: {
+    label: string;
+    icon: ReactNode;
+    /** Receives the icon + responsive label; returns the link element. */
+    render: (inner: ReactNode) => ReactNode;
+    className?: string;
+}) {
+    return (
+        <Tooltip>
+            <TooltipTrigger asChild>
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    asChild
+                    className={cn(ACTION, className)}
+                >
+                    {render(
+                        <>
+                            {icon}
+                            <span className="hidden lg:inline">{label}</span>
+                        </>,
+                    )}
+                </Button>
+            </TooltipTrigger>
+            <TooltipContent className="lg:hidden">{label}</TooltipContent>
+        </Tooltip>
+    );
 }
 
 export default function ArticlesIndex({
@@ -66,12 +196,13 @@ export default function ArticlesIndex({
     filters,
     categories,
     authors,
-    statuses,
+    counts,
     isAdmin,
 }: Props) {
     const [q, setQ] = useState(filters.q ?? '');
 
-    function applyFilters(next: Filters) {
+    /** Current filters merged with `next`, empty values dropped (page resets). */
+    function query(next: Filters): Record<string, string> {
         const merged: Record<string, string> = {};
 
         for (const [key, value] of Object.entries({ ...filters, ...next })) {
@@ -80,7 +211,11 @@ export default function ArticlesIndex({
             }
         }
 
-        router.get(index.url(), merged, {
+        return merged;
+    }
+
+    function applyFilters(next: Filters) {
+        router.get(index.url(), query(next), {
             preserveState: true,
             replace: true,
         });
@@ -89,6 +224,11 @@ export default function ArticlesIndex({
     function handleSearch(e: FormEvent) {
         e.preventDefault();
         applyFilters({ q: q.trim() });
+    }
+
+    function clearFilters() {
+        setQ('');
+        router.get(index.url());
     }
 
     function handleDelete(article: ArticleRow) {
@@ -101,13 +241,56 @@ export default function ArticlesIndex({
         router.delete(destroy.url(article.slug), { preserveScroll: true });
     }
 
-    const hasFilters = Boolean(
-        filters.q ||
-            filters.status ||
-            filters.category ||
-            filters.tag ||
-            filters.author,
+    const activeStatus = (TABS.find((t) => t.status === filters.status)
+        ?.status ?? null) as ArticleStatus | null;
+    const hasOtherFilters = Boolean(
+        filters.q || filters.category || filters.tag || filters.author,
     );
+    const hasFilters = hasOtherFilters || activeStatus !== null;
+
+    let empty: ReactNode = null;
+
+    if (articles.data.length === 0) {
+        if (counts.all === 0 && !hasOtherFilters) {
+            empty = (
+                <EmptyState
+                    icon={FileText}
+                    message="No articles yet. Write your first one."
+                    action={
+                        <Button asChild>
+                            <Link href={create()}>
+                                <Plus /> New article
+                            </Link>
+                        </Button>
+                    }
+                />
+            );
+        } else if (activeStatus && !hasOtherFilters) {
+            empty = (
+                <EmptyState
+                    icon={FileText}
+                    message={`No ${STATUS_LABEL[activeStatus].toLowerCase()} articles.`}
+                    action={
+                        <Button variant="outline" asChild>
+                            <Link href={index()}>Show all articles</Link>
+                        </Button>
+                    }
+                />
+            );
+        } else {
+            empty = (
+                <EmptyState
+                    icon={SearchX}
+                    message="No articles match these filters."
+                    action={
+                        <Button variant="outline" onClick={clearFilters}>
+                            Clear filters
+                        </Button>
+                    }
+                />
+            );
+        }
+    }
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -117,10 +300,9 @@ export default function ArticlesIndex({
                 <FlashMessages />
 
                 <div className="flex items-start justify-between gap-4">
-                    <Heading
-                        title={isAdmin ? 'All articles' : 'My articles'}
-                        description={`${articles.total} ${articles.total === 1 ? 'article' : 'articles'}`}
-                    />
+                    <h1 className="text-xl font-semibold tracking-tight">
+                        {isAdmin ? 'All articles' : 'My articles'}
+                    </h1>
                     <Button asChild>
                         <Link href={create()}>
                             <Plus /> New article
@@ -128,36 +310,63 @@ export default function ArticlesIndex({
                     </Button>
                 </div>
 
+                <nav
+                    aria-label="Filter by status"
+                    className="-mx-4 [scrollbar-width:none] overflow-x-auto border-b px-4 md:mx-0 md:px-0"
+                >
+                    <ul className="flex gap-5">
+                        {TABS.map((tab) => {
+                            const active = tab.status === activeStatus;
+                            const count = counts[tab.status ?? 'all'];
+
+                            return (
+                                <li key={tab.label}>
+                                    <Link
+                                        href={index.url({
+                                            query: query({
+                                                status: tab.status,
+                                            }),
+                                        })}
+                                        preserveScroll
+                                        aria-current={
+                                            active ? 'page' : undefined
+                                        }
+                                        className={cn(
+                                            '-mb-px flex items-center gap-1.5 border-b-2 py-2.5 text-sm font-medium whitespace-nowrap transition-colors',
+                                            active
+                                                ? 'border-brand text-foreground'
+                                                : 'border-transparent text-muted-foreground hover:text-foreground',
+                                        )}
+                                    >
+                                        {tab.label}
+                                        <span className="font-mono text-xs text-muted-foreground tabular-nums">
+                                            {count}
+                                        </span>
+                                    </Link>
+                                </li>
+                            );
+                        })}
+                    </ul>
+                </nav>
+
                 <div className="flex flex-wrap items-center gap-2">
-                    <form onSubmit={handleSearch} className="flex gap-2">
+                    <form
+                        onSubmit={handleSearch}
+                        role="search"
+                        className="flex w-full gap-2 sm:w-auto"
+                    >
                         <Input
                             type="search"
                             value={q}
                             onChange={(e) => setQ(e.target.value)}
                             placeholder="Search titles…"
-                            className="w-56"
+                            className="min-w-0 flex-1 sm:w-56"
                             aria-label="Search titles"
                         />
                         <Button type="submit" variant="secondary">
                             Search
                         </Button>
                     </form>
-
-                    <select
-                        aria-label="Filter by status"
-                        className={SELECT}
-                        value={filters.status ?? ''}
-                        onChange={(e) =>
-                            applyFilters({ status: e.target.value })
-                        }
-                    >
-                        <option value="">All statuses</option>
-                        {statuses.map((s) => (
-                            <option key={s.value} value={s.value}>
-                                {s.label}
-                            </option>
-                        ))}
-                    </select>
 
                     <select
                         aria-label="Filter by category"
@@ -174,12 +383,6 @@ export default function ArticlesIndex({
                             </option>
                         ))}
                     </select>
-
-                    {filters.tag && (
-                        <Badge variant="secondary" className="h-9 px-3">
-                            Tag: {filters.tag}
-                        </Badge>
-                    )}
 
                     {isAdmin && (
                         <select
@@ -199,117 +402,146 @@ export default function ArticlesIndex({
                         </select>
                     )}
 
+                    {filters.tag && (
+                        <Badge variant="secondary" className="h-9 px-3">
+                            Tag: {filters.tag}
+                        </Badge>
+                    )}
+
                     {hasFilters && (
                         <Button
                             type="button"
                             variant="ghost"
-                            onClick={() => {
-                                setQ('');
-                                router.get(index.url());
-                            }}
+                            onClick={clearFilters}
                         >
                             Clear
                         </Button>
                     )}
                 </div>
 
-                {articles.data.length === 0 ? (
-                    <div className="rounded-xl border border-dashed p-12 text-center text-muted-foreground">
-                        {hasFilters ? (
-                            'No articles match these filters.'
-                        ) : (
-                            <>
-                                No articles yet.{' '}
-                                <Link
-                                    href={create()}
-                                    className="font-medium text-primary underline"
-                                >
-                                    Write the first one.
-                                </Link>
-                            </>
-                        )}
-                    </div>
-                ) : (
-                    <ul className="divide-y rounded-xl border">
+                {empty ?? (
+                    <ul className="divide-y rounded-lg border bg-card">
                         {articles.data.map((article) => (
                             <li
                                 key={article.id}
-                                className="flex flex-wrap items-start justify-between gap-3 px-4 py-4"
+                                className="grid grid-cols-[4rem_minmax(0,1fr)] items-center gap-x-3 gap-y-1 px-3 py-3 sm:px-4 md:grid-cols-[4rem_minmax(0,1fr)_auto]"
                             >
-                                <div className="min-w-0 flex-1">
-                                    <div className="flex flex-wrap items-center gap-2">
-                                        <Link
-                                            href={edit(article.slug)}
-                                            className="font-medium hover:underline"
-                                        >
-                                            {article.title}
-                                        </Link>
-                                        <Badge
-                                            variant={
-                                                STATUS_VARIANT[article.status]
-                                            }
-                                        >
-                                            {article.status}
-                                        </Badge>
-                                    </div>
-                                    <p className="mt-1 text-xs text-muted-foreground">
-                                        {article.category?.name ??
-                                            'Uncategorized'}
-                                        {isAdmin && article.author && (
-                                            <> · {article.author.name}</>
-                                        )}
-                                        <>
-                                            {' '}
-                                            · {article.read_time_minutes} min
-                                            read
-                                        </>
-                                        {article.published_at && (
-                                            <>
-                                                {' · '}
-                                                {article.status === 'scheduled'
-                                                    ? 'Scheduled for '
-                                                    : 'Published '}
-                                                {formatDate(
-                                                    article.published_at,
+                                <Thumbnail article={article} />
+
+                                <div className="min-w-0">
+                                    <Link
+                                        href={edit(article.slug)}
+                                        className="line-clamp-2 font-medium underline-offset-4 hover:underline md:line-clamp-1"
+                                    >
+                                        {article.title}
+                                    </Link>
+                                    <p className="mt-0.5 flex flex-wrap items-center gap-x-2 text-xs text-muted-foreground">
+                                        <span className="inline-flex items-center gap-1.5 text-foreground">
+                                            <span
+                                                aria-hidden="true"
+                                                className={cn(
+                                                    'size-2 rounded-full',
+                                                    STATUS_DOT[article.status],
                                                 )}
-                                            </>
-                                        )}
-                                        <>
-                                            {' '}
-                                            · Updated{' '}
-                                            {formatDate(article.updated_at)}
-                                        </>
+                                            />
+                                            {STATUS_LABEL[article.status]}
+                                            {article.status === 'scheduled' &&
+                                                article.published_at && (
+                                                    <time
+                                                        dateTime={
+                                                            article.published_at
+                                                        }
+                                                        title={absoluteDate(
+                                                            article.published_at,
+                                                        )}
+                                                        className="text-muted-foreground"
+                                                        suppressHydrationWarning
+                                                    >
+                                                        {' · '}
+                                                        {shortDate(
+                                                            article.published_at,
+                                                        )}
+                                                    </time>
+                                                )}
+                                        </span>
+                                        <span aria-hidden="true">·</span>
+                                        <span className="truncate">
+                                            {article.category?.name ??
+                                                'Uncategorized'}
+                                            {isAdmin && article.author && (
+                                                <> · {article.author.name}</>
+                                            )}
+                                        </span>
+                                        <span
+                                            aria-hidden="true"
+                                            className="max-md:hidden"
+                                        >
+                                            ·
+                                        </span>
+                                        <time
+                                            className="max-md:basis-full"
+                                            dateTime={article.updated_at}
+                                            title={absoluteDate(
+                                                article.updated_at,
+                                            )}
+                                            suppressHydrationWarning
+                                        >
+                                            Updated{' '}
+                                            {timeAgo(article.updated_at)}
+                                        </time>
                                     </p>
                                 </div>
 
-                                <div className="flex shrink-0 gap-2">
-                                    {article.public_url && (
-                                        <Button
-                                            variant="ghost"
-                                            size="sm"
-                                            asChild
-                                        >
+                                <div className="col-start-2 -ml-2 flex items-center gap-0.5 md:col-start-3 md:row-start-1 md:ml-0">
+                                    <RowAction
+                                        label="Edit"
+                                        icon={<Pencil />}
+                                        render={(inner) => (
+                                            <Link
+                                                href={edit(article.slug)}
+                                                aria-label={`Edit ${article.title}`}
+                                            >
+                                                {inner}
+                                            </Link>
+                                        )}
+                                    />
+                                    <RowAction
+                                        label="Preview"
+                                        icon={<Eye />}
+                                        render={(inner) => (
                                             <a
-                                                href={article.public_url}
+                                                href={article.preview_url}
                                                 target="_blank"
                                                 rel="noopener"
+                                                aria-label={`Preview ${article.title} (opens in a new tab)`}
                                             >
-                                                View
+                                                {inner}
                                             </a>
-                                        </Button>
+                                        )}
+                                    />
+                                    {article.public_url && (
+                                        <RowAction
+                                            label="View live"
+                                            icon={<ExternalLink />}
+                                            render={(inner) => (
+                                                <a
+                                                    href={
+                                                        article.public_url ??
+                                                        undefined
+                                                    }
+                                                    target="_blank"
+                                                    rel="noopener"
+                                                    aria-label={`View ${article.title} live (opens in a new tab)`}
+                                                >
+                                                    {inner}
+                                                </a>
+                                            )}
+                                        />
                                     )}
-                                    <Button variant="outline" size="sm" asChild>
-                                        <Link href={edit(article.slug)}>
-                                            Edit
-                                        </Link>
-                                    </Button>
-                                    <Button
-                                        variant="destructive"
-                                        size="sm"
-                                        onClick={() => handleDelete(article)}
-                                    >
-                                        Delete
-                                    </Button>
+                                    <DeleteAction
+                                        title={article.title}
+                                        onDelete={() => handleDelete(article)}
+                                    />
                                 </div>
                             </li>
                         ))}
@@ -341,5 +573,32 @@ export default function ArticlesIndex({
                 )}
             </div>
         </AppLayout>
+    );
+}
+
+function DeleteAction({
+    title,
+    onDelete,
+}: {
+    title: string;
+    onDelete: () => void;
+}) {
+    return (
+        <Tooltip>
+            <TooltipTrigger asChild>
+                <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={onDelete}
+                    aria-label={`Delete ${title}`}
+                    className={cn(ACTION, 'hover:text-destructive')}
+                >
+                    <Trash2 />
+                    <span className="hidden lg:inline">Delete</span>
+                </Button>
+            </TooltipTrigger>
+            <TooltipContent className="lg:hidden">Delete</TooltipContent>
+        </Tooltip>
     );
 }
