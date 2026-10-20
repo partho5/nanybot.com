@@ -1,6 +1,6 @@
 #!/bin/bash
-# Deploy the latest main to production. Installed as /usr/local/bin/deploy-nanybot.sh
-#   sudo deploy-nanybot.sh
+# Deploy the latest main to production. Run it directly from the repo:
+#   sudo /var/www/nanybot.com/deploy/deploy.sh
 set -euo pipefail
 
 SITE=nanybot
@@ -17,6 +17,8 @@ echo "==> composer"
 sudo -u $SITE composer install --no-dev --optimize-autoloader --no-interaction
 
 echo "==> npm build"
+# Wayfinder reads artisan's route list; a stale route cache hides new routes and breaks the build.
+sudo -u $SITE php artisan route:clear
 sudo -u $SITE npm ci --no-audit --no-fund
 sudo -u $SITE npm run build
 

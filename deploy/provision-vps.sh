@@ -178,6 +178,5 @@ EOP
 systemctl daemon-reload
 systemctl enable --now $SLUG-queue
 echo "* * * * * cd $ROOT && /usr/bin/php artisan schedule:run >> /dev/null 2>&1" | crontab -u $SLUG -
-install -m 755 deploy/deploy.sh /usr/local/bin/deploy-$SLUG.sh
 chmod 600 "$CRED"
 echo "Done. Credentials: $CRED"

@@ -24,7 +24,7 @@ vhost is kept as `nanybot.com.bak-<timestamp>`; a failed smoke test rolls both b
 `contact@<domain>`; set it in extra.env to override. Re-run `php artisan config:cache` after changing it.
 
 ## Releases
-    sudo deploy-nanybot.sh        # = deploy/deploy.sh: pull, composer, npm build, migrate,
+    sudo /var/www/nanybot.com/deploy/deploy.sh   # pull, composer, npm build, migrate,
                                   #   caches, blog:cache-clear, reload FPM, restart queue
 
 ## nginx
