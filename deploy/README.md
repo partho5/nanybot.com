@@ -20,6 +20,9 @@ vhost is kept as `nanybot.com.bak-<timestamp>`; a failed smoke test rolls both b
 
     sudo ./deploy/provision-vps.sh /path/to/extra.env   # extra.env = Cloudinary keys
 
+`SERVICE_CONTACT_EMAIL` (public contact address shown on contact/privacy/terms/refund pages) defaults to
+`contact@<domain>`; set it in extra.env to override. Re-run `php artisan config:cache` after changing it.
+
 ## Releases
     sudo deploy-nanybot.sh        # = deploy/deploy.sh: pull, composer, npm build, migrate,
                                   #   caches, blog:cache-clear, reload FPM, restart queue

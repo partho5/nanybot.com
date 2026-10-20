@@ -101,6 +101,7 @@ setenv CACHE_STORE redis
 setenv REDIS_PREFIX ${SLUG}_
 setenv CACHE_PREFIX ${SLUG}_
 setenv MAIL_FROM_ADDRESS no-reply@$DOMAIN
+setenv SERVICE_CONTACT_EMAIL contact@$DOMAIN   # public contact address (legal pages, contact page); override via extra.env
 setenv BLOG_PAGE_CACHE true
 if [ -n "$EXTRA" ]; then
   while IFS='=' read -r k v; do [ -n "$k" ] && setenv "$k" "$v"; done < "$EXTRA"
