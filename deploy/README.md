@@ -20,6 +20,9 @@ vhost is kept as `nanybot.com.bak-<timestamp>`; a failed smoke test rolls both b
 
     sudo ./deploy/provision-vps.sh /path/to/extra.env   # extra.env = Cloudinary keys
 
+Outgoing mail (password reset etc.) uses Mailgun. Put `MAIL_MAILER=mailgun`, `MAILGUN_DOMAIN`, `MAILGUN_SECRET`
+and `MAILGUN_ENDPOINT` in extra.env (or `.env` on an existing install, then `php artisan config:cache`).
+
 `SERVICE_CONTACT_EMAIL` (public contact address shown on contact/privacy/terms/refund pages) defaults to
 `contact@<domain>`; set it in extra.env to override. Re-run `php artisan config:cache` after changing it.
 
