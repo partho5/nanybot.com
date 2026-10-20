@@ -26,9 +26,11 @@
 <meta property="og:url" content="{{ $seo->canonical }}">
 <meta property="og:image" content="{{ url(config('blog.logo')) }}">
 <meta name="twitter:card" content="summary">
-<link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="/favicon.ico" sizes="48x48">
-<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="icon" href="/favicon-32x32.png" type="image/png" sizes="32x32">
+<link rel="icon" href="/favicon-16x16.png" type="image/png" sizes="16x16">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180">
+<link rel="manifest" href="/site.webmanifest">
 <link rel="alternate" type="application/rss+xml" title="{{ config('blog.name') }} RSS" href="{{ route('blog.feed') }}">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -40,7 +42,7 @@
 <a href="#main" class="skip">Skip to content</a>
 <header class="border-b border-ink">
   <div class="max-w-6xl mx-auto px-5 h-14 flex items-center justify-between">
-    <a href="/" class="flex items-center gap-2 text-lg font-extrabold tracking-tight"><span class="block w-3 h-3 bg-rust" aria-hidden="true"></span>nanybot</a>
+    <a href="/" class="flex items-center gap-2 text-lg font-extrabold tracking-tight"><img src="/logo-64.png" alt="" width="28" height="28" class="block w-7 h-7">nanybot</a>
     <nav aria-label="Main" class="flex items-center gap-6 text-sm font-medium">
       <a class="hover:underline underline-offset-4" href="/#software">Software</a>
       <a class="hover:underline underline-offset-4 hidden sm:inline" href="/#how">How it saves</a>
@@ -55,7 +57,7 @@
 <footer class="border-t border-ink mt-24">
   <div class="max-w-6xl mx-auto px-5 py-12 grid gap-10 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr]">
     <div>
-      <a href="/" class="flex items-center gap-2 text-lg font-extrabold tracking-tight"><span class="block w-3 h-3 bg-rust" aria-hidden="true"></span>nanybot</a>
+      <a href="/" class="flex items-center gap-2 text-lg font-extrabold tracking-tight"><img src="/logo-64.png" alt="" width="28" height="28" class="block w-7 h-7">nanybot</a>
       <p class="mt-3 max-w-xs text-sm text-mute">Repeated tasks automated. For business owners.</p>
     </div>
     <nav aria-label="Software">

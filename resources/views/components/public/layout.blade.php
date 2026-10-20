@@ -36,9 +36,11 @@
     <meta name="twitter:image" content="{{ $ogImage }}">
     <meta name="twitter:image:alt" content="{{ $ogImageAlt }}">
 
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
     <link rel="icon" href="/favicon.ico" sizes="48x48">
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link rel="icon" href="/favicon-32x32.png" type="image/png" sizes="32x32">
+    <link rel="icon" href="/favicon-16x16.png" type="image/png" sizes="16x16">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180">
+    <link rel="manifest" href="/site.webmanifest">
     <link rel="alternate" type="application/rss+xml" title="{{ config('blog.name') }} RSS" href="{{ route('blog.feed') }}">
     @foreach ($seo->links as $link)
         <link rel="{{ $link['rel'] }}" href="{{ $link['href'] }}"@isset($link['type']) type="{{ $link['type'] }}"@endisset @isset($link['title']) title="{{ $link['title'] }}"@endisset>
@@ -57,7 +59,7 @@
 
     <header class="border-b border-line">
         <div class="wrap flex flex-wrap items-center justify-between gap-x-4 gap-y-2 py-3">
-            <a href="{{ route('home') }}" class="text-lg font-bold tracking-tight">{{ config('blog.name') }}</a>
+            <a href="{{ route('home') }}" class="flex items-center gap-2 text-lg font-bold tracking-tight"><img src="/logo-64.png" alt="" width="28" height="28" class="block size-7">{{ config('blog.name') }}</a>
             <nav aria-label="Primary" class="flex items-center gap-4 text-sm">
                 <a href="{{ route('blog.index') }}" class="font-medium hover:text-brand">Blog</a>
                 <a href="{{ route('blog.feed') }}" class="text-muted hover:text-brand">RSS</a>
