@@ -79,8 +79,8 @@ Migrations, enums, models, `CloudinaryService`, `ContentProcessor`, `ArticleWrit
 - [x] Update `.env.example` with `BLOG_PAGE_CACHE` and `BLOG_SAME_AS`.
 
 ### Verify
-- [x] Factories (Category, Tag, Article, ApiKey; User gains role/username/headline/bio and admin()/author() states) and a seeder (`BlogSeeder`: admin plus 2 authors, 4 categories, 8 tags, 16 sample posts).
-- [x] `migrate:fresh --seed`, `npm run build`, `types:check`, `lint`, `pint` (all green).
+- [x] Factories (Category, Tag, Article, ApiKey; User gains role/username/headline/bio and admin()/author() states) (no seeder: no demo data ships; create the admin with `blog:create-admin`).
+- [x] `migrate:fresh`, `npm run build`, `types:check`, `lint`, `pint` (all green).
 - [x] Feature tests: webhook (auth, upsert, schedule), visibility and scheduling, SEO and JSON-LD tags, page cache write and flush, ContentProcessor output. These use the `nanybot_test` Postgres database. (161 tests in tests/Feature, 162 in total; PHPUnit uses `nanybot_test`; page-cache tests write to a temp dir via `blog.page_cache_path`.)
 - [x] Check page weight: 0 JS on public pages, CSS under 14 KB gzipped (inlined CSS 22.6 KB raw / 5.4 KB gzipped; pages 34-56 KB raw, 8-10 KB gzipped; only res.cloudinary.com resources).
-- [ ] `git init` and commit.
+- [x] `git init` and commit.

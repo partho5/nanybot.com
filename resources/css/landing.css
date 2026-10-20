@@ -1,0 +1,46 @@
+/*
+ * Landing page stylesheet (resources/views/landing.blade.php only). Inlined into
+ * <head> by App\Support\InlineAssets. Separate from blog.css so the blog's
+ * theme and gutter rules never leak into the landing page, and vice versa.
+ */
+@import 'tailwindcss' source(none);
+@source '../views/landing.blade.php';
+@source '../views/components/landing';
+@source '../views/pages';
+
+@theme {
+    --font-sans: 'Schibsted Grotesk', ui-sans-serif, system-ui, sans-serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+    --color-paper: #efebe2;
+    --color-ink: #15140f;
+    --color-mute: #5e5a4f;
+    --color-rust: #c7351a;
+}
+
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+::selection { background: #15140f; color: #efebe2; }
+:focus-visible { outline: 3px solid #c7351a; outline-offset: 3px; }
+.skip { position: absolute; left: -9999px; top: 0; background: #15140f; color: #efebe2; padding: 0.75rem 1rem; z-index: 50; }
+.skip:focus { left: 0; }
+
+/* ─── Company pages (privacy, terms, refund, contact) ─────────────────────── */
+.glance li { position: relative; padding-left: 1.5rem; }
+.glance li::before { content: ""; position: absolute; left: 0; top: .6em; width: .5rem; height: .5rem; background: #c7351a; }
+.toc { list-style: none; padding: 0; margin: 0; border-left: 1px solid #15140f; }
+.toc a { display: block; padding: .4rem 0 .4rem .9rem; margin-left: -1px; border-left: 3px solid transparent; color: #5e5a4f; }
+.toc a:hover { color: #15140f; }
+.toc a.is-active { color: #15140f; font-weight: 600; border-left-color: #c7351a; }
+.legal section { counter-increment: sec; counter-reset: cl; padding-top: 2.5rem; }
+.legal section:first-child { padding-top: 0; }
+.legal h2 { font-size: 1.5rem; font-weight: 800; letter-spacing: -.01em; padding-bottom: .75rem; border-bottom: 1px solid #15140f; }
+.clauses { list-style: none; padding: 0; margin: 0; }
+.clauses li { counter-increment: cl; position: relative; padding: 1rem 0 1rem 3.25rem; border-bottom: 1px solid rgba(21,20,15,.15); line-height: 1.6; }
+.clauses li::before { content: counter(sec) "." counter(cl); position: absolute; left: 0; top: 1.15rem; font-family: var(--font-mono); font-size: .75rem; color: #c7351a; }
+.legal a { text-decoration: underline; text-underline-offset: 3px; }
+.legal a:hover { color: #c7351a; }
+.refund-table { width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: .95rem; }
+.refund-table th { text-align: left; font-family: var(--font-mono); font-size: .7rem; text-transform: uppercase; letter-spacing: .06em; color: #5e5a4f; padding: .6rem .75rem .6rem 0; border-bottom: 1px solid #15140f; }
+.refund-table td { padding: .9rem .75rem .9rem 0; border-bottom: 1px solid rgba(21,20,15,.15); }
+.field { display: block; width: 100%; margin-top: .4rem; background: transparent; border: 1px solid #15140f; border-radius: 0; padding: .75rem .85rem; font: inherit; color: inherit; }
+.field:focus { outline: 3px solid #c7351a; outline-offset: 0; }

@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\ApiKeyController;
 use App\Http\Controllers\Admin\ArticleController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\TagController;
+use App\Http\Controllers\Admin\UploadSignatureController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Blog\BlogController;
 use Illuminate\Support\Facades\Route;
@@ -17,6 +18,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('admin', fn () => redirect()->route('admin.articles.index'));
 
     Route::prefix('admin')->name('admin.')->group(function () {
+        Route::post('uploads/sign', UploadSignatureController::class)->middleware('throttle:60,1')->name('uploads.sign');
+
         // Articles: authors manage their own, admins everything (ArticlePolicy).
         Route::get('articles/tags', [ArticleController::class, 'tags'])->name('articles.tags');
         Route::get('articles/{article}/preview', [BlogController::class, 'preview'])->name('articles.preview');

@@ -4,6 +4,7 @@ use App\Http\Controllers\Blog\BlogController;
 use App\Http\Controllers\FeedController;
 use App\Http\Controllers\LandingController;
 use App\Http\Controllers\LlmsTxtController;
+use App\Http\Controllers\PageController;
 use App\Http\Controllers\RobotsController;
 use App\Http\Controllers\SitemapController;
 use Illuminate\Support\Facades\Route;
@@ -14,6 +15,9 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', LandingController::class)->name('home');
+foreach (array_keys(PageController::PAGES) as $page) {
+    Route::get($page, PageController::class)->defaults('page', $page)->name($page);
+}
 Route::get('robots.txt', RobotsController::class)->name('robots');
 Route::get('sitemap.xml', SitemapController::class)->name('sitemap');
 Route::get('llms.txt', LlmsTxtController::class)->name('llms');

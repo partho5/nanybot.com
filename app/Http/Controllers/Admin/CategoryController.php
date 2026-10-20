@@ -25,6 +25,7 @@ class CategoryController extends Controller
                     'slug' => $c->slug,
                     'description' => $c->description,
                     'articles_count' => $c->articles_count,
+                    'url' => $c->url(),
                 ])
                 ->all(),
         ]);

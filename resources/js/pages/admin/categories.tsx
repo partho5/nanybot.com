@@ -4,6 +4,7 @@ import TaxonomyManager from '@/components/admin/taxonomy-manager';
 import type { TaxonomyRow } from '@/components/admin/taxonomy-manager';
 import Heading from '@/components/heading';
 import AppLayout from '@/layouts/app-layout';
+import { index as articlesIndex } from '@/routes/admin/articles';
 import { destroy, index, store, update } from '@/routes/admin/categories';
 import type { BreadcrumbItem } from '@/types';
 
@@ -30,6 +31,9 @@ export default function Categories({
                     storeForm={store.form()}
                     updateForm={(slug) => update.form(slug)}
                     destroyUrl={(slug) => destroy.url(slug)}
+                    articlesUrl={(row) =>
+                        articlesIndex.url({ query: { category: row.id } })
+                    }
                     emptyMessage="No categories yet. Add your first one above."
                 />
             </div>

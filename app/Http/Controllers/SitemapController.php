@@ -11,6 +11,19 @@ use Illuminate\Support\Carbon;
 
 class SitemapController extends Controller
 {
+    /** @var array<string, string> path => lastmod */
+    private const STATIC_PAGES = [
+        'privacy' => '2026-10-14',
+        'terms' => '2026-10-14',
+        'refund' => '2026-10-14',
+        'contact' => '2026-10-14',
+        'ai-laptop-solver/' => '2026-10-02',
+        'ai-laptop-solver/privacy/' => '2026-09-29',
+        'ai-laptop-solver/terms/' => '2026-10-01',
+        'ai-laptop-solver/refund/' => '2026-10-02',
+        'ai-laptop-solver/support/' => '2026-10-04',
+    ];
+
     public function __invoke(): Response
     {
         $articles = Article::query()
@@ -24,6 +37,11 @@ class SitemapController extends Controller
 
         $urls[] = $this->entry(url('/'), $latest, 'weekly', '1.0');
         $urls[] = $this->entry(route('blog.index'), $latest, 'daily', '0.9');
+
+        // Company pages and the AI Laptop Solver static site (public/ai-laptop-solver).
+        foreach (self::STATIC_PAGES as $path => $lastmod) {
+            $urls[] = $this->entry(url($path), $lastmod, 'monthly', str_starts_with($path, 'ai-laptop-solver') ? '0.7' : '0.3');
+        }
 
         foreach ($articles as $article) {
             $image = $article->featuredImageUrl(1200);

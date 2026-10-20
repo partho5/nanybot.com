@@ -28,13 +28,44 @@ class CloudinaryService
     }
 
     /**
+     * Parameters for a browser upload to the signed preset. The secret never
+     * leaves the server; the browser only gets a short-lived signature.
+     *
+     * @return array{cloud_name: string, api_key: string, upload_preset: string, folder: string, timestamp: int, signature: string}|null
+     */
+    public function signUpload(): ?array
+    {
+        $cloudName = config('services.cloudinary.cloud_name');
+        $apiKey = config('services.cloudinary.api_key');
+        $apiSecret = config('services.cloudinary.api_secret');
+        $preset = config('services.cloudinary.upload_preset');
+        $folder = config('services.cloudinary.folder');
+
+        if (! $cloudName || ! $apiKey || ! $apiSecret || ! $preset) {
+            return null;
+        }
+
+        $timestamp = time();
+
+        return [
+            'cloud_name' => $cloudName,
+            'api_key' => $apiKey,
+            'upload_preset' => $preset,
+            'folder' => $folder,
+            'timestamp' => $timestamp,
+            'signature' => sha1("folder={$folder}&timestamp={$timestamp}&upload_preset={$preset}{$apiSecret}"),
+        ];
+    }
+
+    /**
      * Copy a remote image into Cloudinary (signed upload by URL).
      * Returns [secure_url, width, height] or null when not configured / failed.
      *
      * @return array{0: string, 1: int, 2: int}|null
      */
-    public function uploadFromUrl(string $remoteUrl, string $folder = 'blog'): ?array
+    public function uploadFromUrl(string $remoteUrl, ?string $folder = null): ?array
     {
+        $folder ??= config('services.cloudinary.folder');
         $cloudName = config('services.cloudinary.cloud_name');
         $apiKey = config('services.cloudinary.api_key');
         $apiSecret = config('services.cloudinary.api_secret');

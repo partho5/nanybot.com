@@ -31,6 +31,7 @@ class TagController extends Controller
                 'slug' => $t->slug,
                 'description' => $t->description,
                 'articles_count' => $t->articles_count,
+                'url' => $t->url(),
             ]);
 
         return Inertia::render('admin/tags', [

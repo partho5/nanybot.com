@@ -46,6 +46,7 @@ class ArticleController extends Controller
             'q' => trim((string) $request->query('q', '')),
             'status' => $request->query('status'),
             'category' => $request->query('category'),
+            'tag' => $request->query('tag'),
             'author' => $user->isAdmin() ? $request->query('author') : null,
         ];
 
@@ -59,6 +60,7 @@ class ArticleController extends Controller
             ->when($filters['author'], fn ($q, $id) => $q->where('author_id', (int) $id))
             ->when(ArticleStatus::tryFrom((string) $filters['status']), fn ($q, $s) => $q->where('status', $s->value))
             ->when($filters['category'], fn ($q, $id) => $q->where('category_id', (int) $id))
+            ->when($filters['tag'], fn ($q, $slug) => $q->whereHas('tags', fn ($t) => $t->where('tags.slug', $slug)))
             ->when($filters['q'] !== '', fn ($q) => $q->where('title', 'ilike', '%'.addcslashes($filters['q'], '%_\\').'%'))
             ->latest('updated_at')
             ->paginate(self::PER_PAGE)

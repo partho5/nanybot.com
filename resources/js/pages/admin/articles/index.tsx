@@ -26,6 +26,7 @@ type Filters = {
     q?: string | null;
     status?: string | null;
     category?: string | null;
+    tag?: string | null;
     author?: string | null;
 };
 
@@ -101,7 +102,11 @@ export default function ArticlesIndex({
     }
 
     const hasFilters = Boolean(
-        filters.q || filters.status || filters.category || filters.author,
+        filters.q ||
+            filters.status ||
+            filters.category ||
+            filters.tag ||
+            filters.author,
     );
 
     return (
@@ -169,6 +174,12 @@ export default function ArticlesIndex({
                             </option>
                         ))}
                     </select>
+
+                    {filters.tag && (
+                        <Badge variant="secondary" className="h-9 px-3">
+                            Tag: {filters.tag}
+                        </Badge>
+                    )}
 
                     {isAdmin && (
                         <select

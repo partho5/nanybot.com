@@ -1,12 +1,11 @@
 /*
- * Public site stylesheet (landing + blog). Inlined into <head> at build time
+ * Public site stylesheet (blog). Inlined into <head> at build time
  * (App\Support\InlineAssets), so it must stay small: no fonts, no animation
  * libraries, only utilities the Blade views actually use.
  */
 @import 'tailwindcss' source(none);
 @source '../views/blog';
 @source '../views/components/public';
-@source '../views/landing.blade.php';
 @source '../views/errors';
 
 @theme {

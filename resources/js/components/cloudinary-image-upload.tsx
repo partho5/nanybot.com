@@ -1,10 +1,8 @@
 import { ImageIcon, Loader2, X } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { uploadImage } from '@/lib/cloudinary';
 import { cn } from '@/lib/utils';
-
-const CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME as string;
-const UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET as string;
 
 interface Props {
     value: string;
@@ -35,20 +33,7 @@ export default function CloudinaryImageUpload({
         setError(null);
 
         try {
-            const formData = new FormData();
-            formData.append('file', file);
-            formData.append('upload_preset', UPLOAD_PRESET);
-
-            const res = await fetch(
-                `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`,
-                { method: 'POST', body: formData },
-            );
-
-            if (!res.ok) {
-                throw new Error('Upload failed');
-            }
-
-            const data = await res.json();
+            const data = await uploadImage(file);
             onChange(data.secure_url as string);
         } catch {
             setError('Upload failed. Please try again.');

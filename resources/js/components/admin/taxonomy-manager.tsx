@@ -1,4 +1,4 @@
-import { Form, router } from '@inertiajs/react';
+import { Form, Link, router } from '@inertiajs/react';
 import { Pencil, Plus, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import InputError from '@/components/input-error';
@@ -12,6 +12,7 @@ export type TaxonomyRow = {
     slug: string;
     description: string | null;
     articles_count: number;
+    url: string;
 };
 
 type FormProps = {
@@ -26,6 +27,8 @@ type Props = {
     storeForm: FormProps;
     updateForm: (slug: string) => FormProps;
     destroyUrl: (slug: string) => string;
+    /** Admin article list filtered to this row. */
+    articlesUrl: (row: TaxonomyRow) => string;
     emptyMessage: string;
 };
 
@@ -92,11 +95,13 @@ function TaxonomyItem({
     row,
     updateForm,
     destroyUrl,
+    articlesUrl,
 }: {
     noun: string;
     row: TaxonomyRow;
     updateForm: Props['updateForm'];
     destroyUrl: Props['destroyUrl'];
+    articlesUrl: Props['articlesUrl'];
 }) {
     const [editing, setEditing] = useState(false);
 
@@ -146,16 +151,33 @@ function TaxonomyItem({
     return (
         <li className="flex items-center gap-4 p-4">
             <div className="min-w-0 flex-1">
-                <p className="truncate font-medium">{row.name}</p>
+                <p className="truncate font-medium">
+                    <Link
+                        href={articlesUrl(row)}
+                        className="hover:underline"
+                    >
+                        {row.name}
+                    </Link>
+                </p>
                 <p className="truncate text-xs text-muted-foreground">
-                    /{row.slug}
+                    <a
+                        href={row.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="hover:text-foreground hover:underline"
+                    >
+                        /{row.slug}
+                    </a>
                     {row.description ? ` · ${row.description}` : ''}
                 </p>
             </div>
-            <span className="text-sm whitespace-nowrap text-muted-foreground">
+            <Link
+                href={articlesUrl(row)}
+                className="text-sm whitespace-nowrap text-muted-foreground hover:text-foreground hover:underline"
+            >
                 {row.articles_count} article
                 {row.articles_count === 1 ? '' : 's'}
-            </span>
+            </Link>
             <div className="flex gap-1">
                 <Button
                     size="icon"
@@ -185,6 +207,7 @@ export default function TaxonomyManager({
     storeForm,
     updateForm,
     destroyUrl,
+    articlesUrl,
     emptyMessage,
 }: Props) {
     return (
@@ -221,6 +244,7 @@ export default function TaxonomyManager({
                             row={row}
                             updateForm={updateForm}
                             destroyUrl={destroyUrl}
+                            articlesUrl={articlesUrl}
                         />
                     ))}
                 </ul>

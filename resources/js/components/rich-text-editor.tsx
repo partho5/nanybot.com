@@ -16,11 +16,10 @@ import { Callout } from '@/extensions/callout-extension';
 import { CaptionedImage } from '@/extensions/image-extension';
 import { SectionBlock as SectionBlockExt } from '@/extensions/section-block-extension';
 import { Youtube, extractYoutubeId } from '@/extensions/youtube-extension';
+import { uploadImage } from '@/lib/cloudinary';
 
 const lowlight = createLowlight(common);
 
-const CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME as string;
-const UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET as string;
 
 // ─── Toolbar button ───────────────────────────────────────────────────────────
 
@@ -234,20 +233,7 @@ function Toolbar({ editor }: { editor: Editor }) {
             }));
 
             try {
-                const formData = new FormData();
-                formData.append('file', file);
-                formData.append('upload_preset', UPLOAD_PRESET);
-
-                const res = await fetch(
-                    `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`,
-                    { method: 'POST', body: formData },
-                );
-
-                if (!res.ok) {
-                    throw new Error('Upload failed');
-                }
-
-                const data = await res.json();
+                const data = await uploadImage(file);
                 setImgPanel((p) => ({
                     ...p,
                     uploading: false,

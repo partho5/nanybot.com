@@ -9,6 +9,7 @@ import Heading from '@/components/heading';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import AppLayout from '@/layouts/app-layout';
+import { index as articlesIndex } from '@/routes/admin/articles';
 import { destroy, index, store, update } from '@/routes/admin/tags';
 import type { BreadcrumbItem } from '@/types';
 import type { Paginated } from '@/types/article';
@@ -74,6 +75,9 @@ export default function Tags({
                     storeForm={store.form()}
                     updateForm={(slug) => update.form(slug)}
                     destroyUrl={(slug) => destroy.url(slug)}
+                    articlesUrl={(row) =>
+                        articlesIndex.url({ query: { tag: row.slug } })
+                    }
                     emptyMessage={
                         filters.q
                             ? `No tags match "${filters.q}".`
