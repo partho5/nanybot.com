@@ -118,8 +118,7 @@ export default function ImageDialog({
     return (
         <Dialog open onOpenChange={(open) => !open && onClose()}>
             <DialogContent
-                // `dark` swaps in the dark tokens so text, inputs and buttons contrast with the black surface.
-                className="dark max-h-[calc(100svh-2rem)] overflow-y-auto border-white/15 bg-black text-foreground"
+                className="max-h-[calc(100svh-2rem)] overflow-y-auto"
                 // Keep focus out of the editor until we are done, then hand it back.
                 onCloseAutoFocus={(e) => e.preventDefault()}
             >

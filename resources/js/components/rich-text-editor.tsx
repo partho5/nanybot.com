@@ -842,7 +842,7 @@ export default function RichTextEditor({
                 shouldShow={({ editor: e }) =>
                     e.isEditable && e.isActive('image')
                 }
-                className="flex items-center gap-1 rounded-md border bg-popover p-1 text-xs shadow-md"
+                className="flex items-center gap-1 rounded-md border border-white/15 bg-black p-1 text-xs text-white shadow-md"
             >
                 <button
                     type="button"
@@ -855,7 +855,7 @@ export default function RichTextEditor({
                             ),
                         });
                     }}
-                    className="rounded px-2 py-1 hover:bg-muted"
+                    className="rounded px-2 py-1 hover:bg-white/15"
                 >
                     Edit image
                 </button>
@@ -865,7 +865,7 @@ export default function RichTextEditor({
                         e.preventDefault();
                         editor.chain().focus().deleteSelection().run();
                     }}
-                    className="rounded px-2 py-1 text-destructive hover:bg-muted"
+                    className="rounded px-2 py-1 text-red-400 hover:bg-white/15"
                 >
                     Remove
                 </button>
