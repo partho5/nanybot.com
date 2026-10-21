@@ -61,26 +61,27 @@ class ArticlePageTest extends TestCase
         $this->assertSame(1, $xpath->query(".//a[@href='".config('blog.cta.secondary.url')."']", $cta)->length);
     }
 
-    public function test_author_card_shows_written_by_with_published_article_count(): void
+    public function test_author_card_shows_about_the_author_with_published_article_count(): void
     {
         Article::factory()->create(['author_id' => $this->author->id]);
         Article::factory()->draft()->create(['author_id' => $this->author->id]);
 
         $xpath = $this->dom($this->html());
-        $card = $xpath->query("//main//aside[@aria-labelledby='author-card-name']")->item(0);
+        $card = $xpath->query("//main//aside[@aria-labelledby='author-card-title']")->item(0);
 
         $this->assertNotNull($card);
-        $this->assertStringContainsString('Written by', $card->textContent);
+        $this->assertStringContainsString('About the author', $card->textContent);
         $this->assertStringContainsString('All articles by Ada Lovelace', $card->textContent);
         $this->assertStringContainsString('2 articles', $card->textContent); // the draft is not counted
-        $this->assertSame(1, $xpath->query(".//a[@aria-label='LinkedIn'][@href='https://www.linkedin.com/in/ada']//svg", $card)->length);
+        $this->assertSame(1, $xpath->query(".//a[@href='https://www.linkedin.com/in/ada'][contains(., 'LinkedIn')]//svg", $card)->length);
+        $this->assertStringContainsString('Ada writes guides for small-business owners.', $card->textContent);
     }
 
     public function test_sections_after_the_body_are_in_order(): void
     {
         $html = $this->html();
         $positions = array_map(fn ($needle) => strpos($html, $needle), [
-            'class="article-body"', 'rel="tag"', 'Share on X', 'Written by', config('blog.cta.headline'),
+            'class="article-body"', 'rel="tag"', 'Share on X', 'About the author', config('blog.cta.headline'),
         ]);
 
         $this->assertNotContains(false, $positions);

@@ -67,6 +67,12 @@ class User extends Authenticatable
         return $this->hasMany(Article::class, 'author_id');
     }
 
+    /** @return HasMany<UsernameRedirect, $this> */
+    public function usernameRedirects(): HasMany
+    {
+        return $this->hasMany(UsernameRedirect::class);
+    }
+
     public function isAdmin(): bool
     {
         return $this->role === UserRole::Admin;

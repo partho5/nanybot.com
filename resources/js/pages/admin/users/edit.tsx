@@ -3,6 +3,11 @@ import { ExternalLink, Plus, X } from 'lucide-react';
 import { useState } from 'react';
 import FlashMessages from '@/components/admin/flash-messages';
 import NativeSelect from '@/components/admin/native-select';
+import SocialNetworkIcon, {
+    detectNetwork,
+} from '@/components/admin/social-network-icon';
+import type { SocialNetwork } from '@/components/admin/social-network-icon';
+import CloudinaryImageUpload from '@/components/cloudinary-image-upload';
 import Heading from '@/components/heading';
 import InputError from '@/components/input-error';
 import PasswordInput from '@/components/password-input';
@@ -27,13 +32,20 @@ type Props = {
         author_url: string;
     };
     roles: { value: string; label: string }[];
+    socialNetworks: SocialNetwork[];
     isAdmin: boolean;
     isSelf: boolean;
 };
 
 type LinkRow = { label: string; url: string };
 
-export default function EditUser({ user, roles, isAdmin, isSelf }: Props) {
+export default function EditUser({
+    user,
+    roles,
+    socialNetworks,
+    isAdmin,
+    isSelf,
+}: Props) {
     const [links, setLinks] = useState<LinkRow[]>(
         Object.entries(user.social_links ?? {}).map(([label, url]) => ({
             label,
@@ -62,6 +74,22 @@ export default function EditUser({ user, roles, isAdmin, isSelf }: Props) {
     function setLink(i: number, patch: Partial<LinkRow>) {
         setLinks((rows) =>
             rows.map((r, idx) => (idx === i ? { ...r, ...patch } : r)),
+        );
+    }
+
+    /** Typing a recognised URL names the link after its network, unless the label was already filled in. */
+    function setUrl(i: number, url: string) {
+        const network = detectNetwork(socialNetworks, url);
+
+        setLinks((rows) =>
+            rows.map((r, idx) =>
+                idx === i
+                    ? {
+                          label: r.label || network?.label || '',
+                          url,
+                      }
+                    : r,
+            ),
         );
     }
 
@@ -188,25 +216,13 @@ export default function EditUser({ user, roles, isAdmin, isSelf }: Props) {
                             <InputError message={form.errors.bio} />
                         </div>
                         <div className="grid gap-1.5">
-                            <Label htmlFor="avatar">Avatar URL</Label>
-                            <div className="flex items-center gap-3">
-                                {form.data.avatar && (
-                                    <img
-                                        src={form.data.avatar}
-                                        alt=""
-                                        className="size-10 shrink-0 rounded-full object-cover"
-                                    />
-                                )}
-                                <Input
-                                    id="avatar"
-                                    type="url"
-                                    value={form.data.avatar}
-                                    onChange={(e) =>
-                                        form.setData('avatar', e.target.value)
-                                    }
-                                    placeholder="https://…"
-                                />
-                            </div>
+                            <Label>Avatar</Label>
+                            <CloudinaryImageUpload
+                                value={form.data.avatar}
+                                onChange={(url) => form.setData('avatar', url)}
+                                disabled={form.processing}
+                                aspectHint="1:1"
+                            />
                             <InputError message={form.errors.avatar} />
                         </div>
                     </div>
@@ -215,25 +231,36 @@ export default function EditUser({ user, roles, isAdmin, isSelf }: Props) {
                         <legend className="text-sm font-medium">
                             Social links
                         </legend>
+                        <p className="text-xs text-muted-foreground">
+                            Paste a profile URL: the icon and label are picked
+                            from the site (GitHub, LinkedIn, DEV, Medium, Stack
+                            Overflow and more).
+                        </p>
                         {links.map((row, i) => (
-                            <div key={i} className="flex gap-2">
+                            <div key={i} className="flex items-center gap-2">
+                                <span className="flex size-9 shrink-0 items-center justify-center rounded-md border bg-muted/40 text-muted-foreground">
+                                    <SocialNetworkIcon
+                                        network={detectNetwork(
+                                            socialNetworks,
+                                            row.url,
+                                        )}
+                                    />
+                                </span>
+                                <Input
+                                    type="url"
+                                    value={row.url}
+                                    onChange={(e) => setUrl(i, e.target.value)}
+                                    placeholder="https://github.com/you"
+                                    aria-label="Link URL"
+                                />
                                 <Input
                                     value={row.label}
                                     onChange={(e) =>
                                         setLink(i, { label: e.target.value })
                                     }
-                                    placeholder="Label (e.g. GitHub)"
+                                    placeholder="Label"
                                     aria-label="Link label"
                                     className="w-1/3"
-                                />
-                                <Input
-                                    type="url"
-                                    value={row.url}
-                                    onChange={(e) =>
-                                        setLink(i, { url: e.target.value })
-                                    }
-                                    placeholder="https://…"
-                                    aria-label="Link URL"
                                 />
                                 <Button
                                     type="button"

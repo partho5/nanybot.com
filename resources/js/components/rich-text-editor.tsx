@@ -7,8 +7,10 @@ import { TableHeader } from '@tiptap/extension-table-header';
 import { TableRow } from '@tiptap/extension-table-row';
 import { TextStyle, Color, FontSize } from '@tiptap/extension-text-style';
 import { Underline } from '@tiptap/extension-underline';
+import { NodeSelection } from '@tiptap/pm/state';
 import { EditorContent, useEditor, useEditorState } from '@tiptap/react';
 import type { Editor } from '@tiptap/react';
+import { BubbleMenu } from '@tiptap/react/menus';
 import StarterKit from '@tiptap/starter-kit';
 import { common, createLowlight } from 'lowlight';
 import { useCallback, useRef, useState } from 'react';
@@ -20,11 +22,12 @@ import type {
     CalloutVariantKey,
     SectionVariantKey,
 } from '@/components/editor/block-palette';
+import ImageDialog from '@/components/editor/image-dialog';
+import type { ImageValues } from '@/components/editor/image-dialog';
 import { Callout } from '@/extensions/callout-extension';
 import { CaptionedImage } from '@/extensions/image-extension';
 import { SectionBlock as SectionBlockExt } from '@/extensions/section-block-extension';
 import { Youtube, extractYoutubeId } from '@/extensions/youtube-extension';
-import { uploadImage } from '@/lib/cloudinary';
 
 const lowlight = createLowlight(common);
 
@@ -98,31 +101,6 @@ const HIGHLIGHT_COLORS = [
     '#ff8c00',
     '#ff69b4',
 ];
-type ImgPanel = {
-    open: boolean;
-    uploadedUrl: string;
-    width: number | null;
-    height: number | null;
-    url: string;
-    alt: string;
-    caption: string;
-    fileName: string;
-    uploading: boolean;
-    error: string | null;
-};
-const IMG_PANEL_CLOSED: ImgPanel = {
-    open: false,
-    uploadedUrl: '',
-    width: null,
-    height: null,
-    url: '',
-    alt: '',
-    caption: '',
-    fileName: '',
-    uploading: false,
-    error: null,
-};
-
 type YtPanel = {
     open: boolean;
     input: string;
@@ -142,25 +120,18 @@ const PANEL_CLASSES =
 function Toolbar({
     editor,
     sticky = false,
+    onImage,
 }: {
     editor: Editor;
     sticky?: boolean;
+    /** Opens the image dialog: edits the selected image, or inserts a new one. */
+    onImage: () => void;
 }) {
     const colorRef = useRef<HTMLInputElement>(null);
     const highlightRef = useRef<HTMLInputElement>(null);
-    const fileRef = useRef<HTMLInputElement>(null);
-    const [imgPanel, setImgPanel] = useState<ImgPanel>(IMG_PANEL_CLOSED);
     const [ytPanel, setYtPanel] = useState<YtPanel>(YT_PANEL_CLOSED);
 
-    const openImgPanel = useCallback(() => {
-        setYtPanel(YT_PANEL_CLOSED);
-        setImgPanel((p) =>
-            p.open ? IMG_PANEL_CLOSED : { ...IMG_PANEL_CLOSED, open: true },
-        );
-    }, []);
-
     const openYtPanel = useCallback(() => {
-        setImgPanel(IMG_PANEL_CLOSED);
         setYtPanel((p) =>
             p.open ? YT_PANEL_CLOSED : { ...YT_PANEL_CLOSED, open: true },
         );
@@ -174,6 +145,7 @@ function Toolbar({
             isUnderline: ctx.editor.isActive('underline'),
             isStrike: ctx.editor.isActive('strike'),
             isLink: ctx.editor.isActive('link'),
+            isImage: ctx.editor.isActive('image'),
             isCodeBlock: ctx.editor.isActive('codeBlock'),
             isBulletList: ctx.editor.isActive('bulletList'),
             isOrderedList: ctx.editor.isActive('orderedList'),
@@ -210,76 +182,6 @@ function Toolbar({
                 .run();
         }
     }, [editor]);
-
-    const handleImgFile = useCallback(
-        async (e: React.ChangeEvent<HTMLInputElement>) => {
-            const file = e.target.files?.[0];
-            if (!file) {
-                return;
-            }
-
-            setImgPanel((p) => ({
-                ...p,
-                uploading: true,
-                error: null,
-                fileName: file.name,
-                url: '',
-                uploadedUrl: '',
-                width: null,
-                height: null,
-            }));
-
-            try {
-                const data = await uploadImage(file);
-                setImgPanel((p) => ({
-                    ...p,
-                    uploading: false,
-                    uploadedUrl: data.secure_url as string,
-                    width: typeof data.width === 'number' ? data.width : null,
-                    height:
-                        typeof data.height === 'number' ? data.height : null,
-                }));
-            } catch {
-                setImgPanel((p) => ({
-                    ...p,
-                    uploading: false,
-                    error: 'Upload failed. Please try again.',
-                }));
-            } finally {
-                if (fileRef.current) {
-                    fileRef.current.value = '';
-                }
-            }
-        },
-        [],
-    );
-
-    const insertImage = useCallback(() => {
-        const src = imgPanel.uploadedUrl || imgPanel.url.trim();
-        if (src) {
-            // width/height only known for Cloudinary uploads; for pasted URLs the server probes them.
-            const fromUpload = Boolean(imgPanel.uploadedUrl);
-            editor
-                .chain()
-                .focus()
-                .setImage({
-                    src,
-                    alt: imgPanel.alt.trim() || undefined,
-                    width: fromUpload
-                        ? (imgPanel.width ?? undefined)
-                        : undefined,
-                    height: fromUpload
-                        ? (imgPanel.height ?? undefined)
-                        : undefined,
-                    caption: imgPanel.caption.trim() || null,
-                } as Parameters<typeof editor.commands.setImage>[0])
-                .run();
-        }
-        setImgPanel(IMG_PANEL_CLOSED);
-        if (fileRef.current) {
-            fileRef.current.value = '';
-        }
-    }, [editor, imgPanel]);
 
     const handleYtInput = useCallback((value: string) => {
         setYtPanel((p) => ({
@@ -532,9 +434,9 @@ function Toolbar({
                     🔗
                 </ToolbarBtn>
                 <ToolbarBtn
-                    onClick={openImgPanel}
-                    active={imgPanel.open}
-                    title="Insert image"
+                    onClick={onImage}
+                    active={s.isImage}
+                    title={s.isImage ? 'Edit image' : 'Insert image'}
                 >
                     🖼
                 </ToolbarBtn>
@@ -703,161 +605,6 @@ function Toolbar({
                 </div>
             </div>
 
-            {/* Image insertion panel */}
-            {imgPanel.open && (
-                <div className={PANEL_CLASSES}>
-                    {/* Hidden file input */}
-                    <input
-                        ref={fileRef}
-                        type="file"
-                        accept="image/*"
-                        className="sr-only"
-                        onChange={handleImgFile}
-                        disabled={imgPanel.uploading}
-                    />
-
-                    {/* Upload button + filename */}
-                    <div className="flex flex-col gap-0.5">
-                        <span className="text-[10px] text-muted-foreground">
-                            Upload
-                        </span>
-                        <div className="flex items-center gap-1.5">
-                            <button
-                                type="button"
-                                disabled={imgPanel.uploading}
-                                onMouseDown={(e) => {
-                                    e.preventDefault();
-                                    fileRef.current?.click();
-                                }}
-                                className="rounded border border-border bg-background px-2 py-0.5 text-xs transition-colors hover:bg-muted disabled:opacity-50"
-                            >
-                                {imgPanel.uploading
-                                    ? 'Uploading…'
-                                    : 'Choose file'}
-                            </button>
-                            <span className="max-w-[120px] truncate text-xs text-muted-foreground">
-                                {imgPanel.fileName || 'No file chosen'}
-                            </span>
-                        </div>
-                        {imgPanel.error && (
-                            <span className="text-[10px] text-destructive">
-                                {imgPanel.error}
-                            </span>
-                        )}
-                    </div>
-
-                    {/* OR separator */}
-                    <span className="self-end pb-0.5 text-xs text-muted-foreground">
-                        or
-                    </span>
-
-                    {/* URL input */}
-                    <div className="flex min-w-[160px] flex-1 flex-col gap-0.5">
-                        <span className="text-[10px] text-muted-foreground">
-                            Image URL
-                        </span>
-                        <input
-                            type="url"
-                            placeholder="https://..."
-                            value={imgPanel.url}
-                            onChange={(e) =>
-                                setImgPanel((p) => ({
-                                    ...p,
-                                    url: e.target.value,
-                                    uploadedUrl: '',
-                                    width: null,
-                                    height: null,
-                                    fileName: '',
-                                }))
-                            }
-                            className="h-6 rounded border border-border bg-background px-2 text-xs focus:ring-1 focus:ring-ring focus:outline-none"
-                        />
-                    </div>
-
-                    {/* Alt text */}
-                    <div className="flex min-w-[140px] flex-col gap-0.5">
-                        <span className="text-[10px] text-muted-foreground">
-                            Alt text
-                        </span>
-                        <input
-                            type="text"
-                            placeholder="Describe the image"
-                            value={imgPanel.alt}
-                            onChange={(e) =>
-                                setImgPanel((p) => ({
-                                    ...p,
-                                    alt: e.target.value,
-                                }))
-                            }
-                            className="h-6 rounded border border-border bg-background px-2 text-xs focus:ring-1 focus:ring-ring focus:outline-none"
-                        />
-                    </div>
-
-                    {/* Caption */}
-                    <div className="flex min-w-[140px] flex-col gap-0.5">
-                        <span className="text-[10px] text-muted-foreground">
-                            Caption (optional)
-                        </span>
-                        <input
-                            type="text"
-                            placeholder="Shown under the image"
-                            value={imgPanel.caption}
-                            onChange={(e) =>
-                                setImgPanel((p) => ({
-                                    ...p,
-                                    caption: e.target.value,
-                                }))
-                            }
-                            className="h-6 rounded border border-border bg-background px-2 text-xs focus:ring-1 focus:ring-ring focus:outline-none"
-                        />
-                    </div>
-
-                    {/* Preview thumbnail */}
-                    {(imgPanel.uploadedUrl || imgPanel.url) && (
-                        <img
-                            src={imgPanel.uploadedUrl || imgPanel.url}
-                            alt="preview"
-                            className="h-10 w-10 rounded border border-border object-cover"
-                            onError={(e) => {
-                                (e.target as HTMLImageElement).style.display =
-                                    'none';
-                            }}
-                        />
-                    )}
-
-                    {/* Actions */}
-                    <div className="flex items-end gap-1.5 self-end">
-                        <button
-                            type="button"
-                            onMouseDown={(e) => {
-                                e.preventDefault();
-                                insertImage();
-                            }}
-                            disabled={
-                                imgPanel.uploading ||
-                                (!imgPanel.uploadedUrl && !imgPanel.url.trim())
-                            }
-                            className="rounded bg-primary px-3 py-0.5 text-xs text-primary-foreground transition-opacity disabled:opacity-40"
-                        >
-                            Insert
-                        </button>
-                        <button
-                            type="button"
-                            onMouseDown={(e) => {
-                                e.preventDefault();
-                                setImgPanel(IMG_PANEL_CLOSED);
-                                if (fileRef.current) {
-                                    fileRef.current.value = '';
-                                }
-                            }}
-                            className="rounded border border-border px-2 py-0.5 text-xs transition-colors hover:bg-muted"
-                        >
-                            Cancel
-                        </button>
-                    </div>
-                </div>
-            )}
-
             {/* YouTube insertion panel */}
             {ytPanel.open && (
                 <div className={PANEL_CLASSES}>
@@ -945,6 +692,8 @@ interface RichTextEditorProps {
     autoFocus?: boolean;
     /** Writing-canvas mode: tall, grows with the content, toolbar stays in view. */
     tall?: boolean;
+    /** Called with every image URL uploaded through the editor (to clean up unused ones on save). */
+    onImageUploaded?: (url: string) => void;
 }
 
 export default function RichTextEditor({
@@ -954,7 +703,13 @@ export default function RichTextEditor({
     placeholder,
     autoFocus = false,
     tall = false,
+    onImageUploaded,
 }: RichTextEditorProps) {
+    // null = closed; 'insert' adds a new image, 'edit' changes the selected one.
+    const [imageDialog, setImageDialog] = useState<'insert' | 'edit' | null>(
+        null,
+    );
+
     const editor = useEditor({
         autofocus: autoFocus ? 'end' : false,
         extensions: [
@@ -981,6 +736,23 @@ export default function RichTextEditor({
         ],
         content: value,
         editable: !disabled,
+        editorProps: {
+            // Double-click an image to edit its alt text, caption or source.
+            handleDoubleClickOn: (view, _pos, node, nodePos) => {
+                if (node.type.name !== 'image') {
+                    return false;
+                }
+
+                view.dispatch(
+                    view.state.tr.setSelection(
+                        NodeSelection.create(view.state.doc, nodePos),
+                    ),
+                );
+                setImageDialog('edit');
+
+                return true;
+            },
+        },
         onUpdate: ({ editor }) => {
             onChange(editor.getHTML());
         },
@@ -990,16 +762,116 @@ export default function RichTextEditor({
         return null;
     }
 
+    const selectedImage = editor.isActive('image')
+        ? (editor.getAttributes('image') as {
+              src?: string;
+              alt?: string | null;
+              caption?: string | null;
+              width?: number | null;
+              height?: number | null;
+          })
+        : null;
+
+    function openImage() {
+        setImageDialog(editor?.isActive('image') ? 'edit' : 'insert');
+    }
+
+    function closeImage() {
+        setImageDialog(null);
+        editor?.commands.focus();
+    }
+
+    function applyImage(values: ImageValues) {
+        const attrs = {
+            src: values.src,
+            alt: values.alt || null,
+            caption: values.caption || null,
+            width: values.width,
+            height: values.height,
+        };
+
+        if (imageDialog === 'edit') {
+            editor?.chain().focus().updateAttributes('image', attrs).run();
+        } else {
+            editor
+                ?.chain()
+                .focus()
+                .setImage({
+                    ...attrs,
+                    alt: attrs.alt ?? undefined,
+                    width: attrs.width ?? undefined,
+                    height: attrs.height ?? undefined,
+                } as Parameters<
+                    NonNullable<typeof editor>['commands']['setImage']
+                >[0])
+                .run();
+        }
+
+        setImageDialog(null);
+    }
+
+    function removeImage() {
+        editor?.chain().focus().deleteSelection().run();
+        setImageDialog(null);
+    }
+
     return (
         <div
             className={`tiptap-editor rounded-md border border-input bg-card text-sm ${disabled ? 'pointer-events-none opacity-50' : ''}`}
         >
-            <Toolbar editor={editor} sticky={tall} />
+            <Toolbar editor={editor} sticky={tall} onImage={openImage} />
+            <BubbleMenu
+                editor={editor}
+                shouldShow={({ editor: e }) =>
+                    e.isEditable && e.isActive('image')
+                }
+                className="flex items-center gap-1 rounded-md border bg-popover p-1 text-xs shadow-md"
+            >
+                <button
+                    type="button"
+                    onMouseDown={(e) => {
+                        e.preventDefault();
+                        setImageDialog('edit');
+                    }}
+                    className="rounded px-2 py-1 hover:bg-muted"
+                >
+                    Edit image
+                </button>
+                <button
+                    type="button"
+                    onMouseDown={(e) => {
+                        e.preventDefault();
+                        editor.chain().focus().deleteSelection().run();
+                    }}
+                    className="rounded px-2 py-1 text-destructive hover:bg-muted"
+                >
+                    Remove
+                </button>
+            </BubbleMenu>
             <div
                 className={`rounded-b-md focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-1 ${tall ? 'min-h-[32rem] lg:min-h-[calc(100svh-14rem)] [&_.ProseMirror]:min-h-[inherit]!' : 'max-h-[60vh] min-h-48 overflow-y-auto'}`}
             >
                 <EditorContent editor={editor} placeholder={placeholder} />
             </div>
+            {imageDialog && (
+                <ImageDialog
+                    initial={
+                        imageDialog === 'edit' && selectedImage?.src
+                            ? {
+                                  src: selectedImage.src,
+                                  alt: selectedImage.alt ?? '',
+                                  caption: selectedImage.caption ?? '',
+                                  width: selectedImage.width ?? null,
+                                  height: selectedImage.height ?? null,
+                              }
+                            : null
+                    }
+                    onSubmit={applyImage}
+                    onRemove={removeImage}
+                    onClose={closeImage}
+                    onUploaded={onImageUploaded}
+                />
+            )}
         </div>
     );
 }

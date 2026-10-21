@@ -78,6 +78,8 @@ export default function ArticleForm({
     // True while our own save request is in flight, so it never triggers the leave guard.
     const submittingRef = useRef(false);
     const dirtyRef = useRef(false);
+    // Images uploaded in this session: any that did not make it into the saved article are deleted server-side.
+    const uploadedRef = useRef<Set<string>>(new Set());
 
     useEffect(() => {
         dirtyRef.current = form.isDirty;
@@ -100,6 +102,7 @@ export default function ArticleForm({
 
         form.transform((data) => ({
             ...data,
+            uploaded_images: [...uploadedRef.current],
             tags: parseTags(data.tags),
             slug: data.slug || null,
             category_id: data.category_id || null,
@@ -112,6 +115,7 @@ export default function ArticleForm({
 
         submittingRef.current = true;
         const options = {
+            onSuccess: () => uploadedRef.current.clear(),
             onFinish: () => {
                 submittingRef.current = false;
             },
@@ -208,6 +212,9 @@ export default function ArticleForm({
                             tall
                             value={form.data.body}
                             onChange={(v) => form.setData('body', v)}
+                            onImageUploaded={(url) =>
+                                uploadedRef.current.add(url)
+                            }
                             placeholder="Start writing…"
                             disabled={form.processing}
                         />
@@ -233,7 +240,10 @@ export default function ArticleForm({
                             )
                         }
                     />
-                    <FeaturedImageSection form={form} />
+                    <FeaturedImageSection
+                        form={form}
+                        onUploaded={(url) => uploadedRef.current.add(url)}
+                    />
                     <OrganizeSection
                         form={form}
                         categories={categories}

@@ -7,6 +7,8 @@ import { cn } from '@/lib/utils';
 interface Props {
     value: string;
     onChange: (url: string) => void;
+    /** Fires for every successful upload, even if the image is replaced before saving. */
+    onUploaded?: (url: string) => void;
     disabled?: boolean;
     aspectHint?: string;
     className?: string;
@@ -15,6 +17,7 @@ interface Props {
 export default function CloudinaryImageUpload({
     value,
     onChange,
+    onUploaded,
     disabled,
     aspectHint,
     className,
@@ -34,6 +37,7 @@ export default function CloudinaryImageUpload({
 
         try {
             const data = await uploadImage(file);
+            onUploaded?.(data.secure_url as string);
             onChange(data.secure_url as string);
         } catch {
             setError('Upload failed. Please try again.');

@@ -60,6 +60,9 @@ class SaveArticleRequest extends FormRequest
             'featured_image' => ['nullable', 'url:https', 'max:2048'],
             'featured_image_alt' => ['nullable', 'string', 'max:255'],
             'featured_image_caption' => ['nullable', 'string', 'max:500'],
+            // Cloudinary URLs the editor uploaded this session; deleted again if they did not make it into the body.
+            'uploaded_images' => ['nullable', 'array', 'max:100'],
+            'uploaded_images.*' => ['string', 'url:https', 'max:2048'],
             'category_id' => ['nullable', 'integer', 'exists:categories,id'],
             'tags' => ['nullable', 'array', 'max:20'],
             'tags.*' => ['string', 'max:60'],

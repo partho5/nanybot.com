@@ -9,6 +9,7 @@ use App\Models\Article;
 use App\Models\Category;
 use App\Models\Tag;
 use App\Models\User;
+use App\Models\UsernameRedirect;
 use App\Services\Blog\ArticleWriter;
 use App\Support\Schema;
 use App\Support\Seo;
@@ -390,12 +391,16 @@ class BlogController extends Controller
         ));
     }
 
+    /** By current username (or id); a former username resolves to its owner and gets redirected by the caller. */
     private function resolveAuthor(string $key): User
     {
+        $columns = ['id', 'name', 'username', 'avatar', 'headline', 'bio', 'social_links'];
+
         $user = User::query()
             ->where('username', $key)
             ->when(ctype_digit($key), fn ($q) => $q->orWhere('id', (int) $key))
-            ->first(['id', 'name', 'username', 'avatar', 'headline', 'bio', 'social_links']);
+            ->first($columns)
+            ?? UsernameRedirect::query()->where('username', $key)->first()?->user()->first($columns);
 
         abort_unless($user && $user->articles()->published()->exists(), 404);
 

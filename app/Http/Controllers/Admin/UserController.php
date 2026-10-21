@@ -7,6 +7,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StoreUserRequest;
 use App\Http\Requests\Admin\UpdateUserRequest;
 use App\Models\User;
+use App\Models\UsernameRedirect;
+use App\Services\Blog\ImageCleaner;
+use App\Support\SocialNetworks;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -16,6 +19,8 @@ use Inertia\Response;
 class UserController extends Controller
 {
     private const PER_PAGE = 20;
+
+    public function __construct(private ImageCleaner $images) {}
 
     /** Admin only (route middleware). */
     public function index(Request $request): Response
@@ -89,6 +94,7 @@ class UserController extends Controller
                 'author_url' => $user->authorUrl(),
             ],
             'roles' => $this->roleOptions(),
+            'socialNetworks' => SocialNetworks::forClient(),
             'isAdmin' => $request->user()->isAdmin(),
             'isSelf' => $request->user()->is($user),
         ]);
@@ -111,7 +117,23 @@ class UserController extends Controller
             $data['social_links'] = $data['social_links'] ?: null;
         }
 
+        $oldUsername = $user->username;
+        $oldAvatar = $user->avatar;
+
         $user->fill($data)->save();
+
+        // The old public author URL keeps working (301) after a rename.
+        if ($oldUsername && $user->username !== $oldUsername) {
+            UsernameRedirect::updateOrCreate(['username' => $oldUsername], ['user_id' => $user->id]);
+        }
+        if ($user->username) {
+            $user->usernameRedirects()->where('username', $user->username)->delete();
+        }
+
+        // A replaced or removed avatar is deleted from Cloudinary unless it is used elsewhere.
+        if ($oldAvatar && $user->avatar !== $oldAvatar) {
+            $this->images->purgeUnused([$oldAvatar]);
+        }
 
         Inertia::flash('success', 'Profile updated.');
 

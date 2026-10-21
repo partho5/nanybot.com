@@ -15,16 +15,20 @@ use Illuminate\Support\Str;
  */
 class ArticleWriter
 {
-    public function __construct(private ContentProcessor $processor) {}
+    public function __construct(private ContentProcessor $processor, private ImageCleaner $images) {}
 
     /**
-     * @param  array<string, mixed>  $data  validated attributes (+ optional publish_at, tags)
+     * @param  array<string, mixed>  $data  validated attributes (+ optional publish_at, tags, uploaded_images)
      */
     public function save(Article $article, array $data): Article
     {
         $tags = $data['tags'] ?? null;
         $publishAt = $data['publish_at'] ?? null;
-        unset($data['tags'], $data['publish_at']);
+        // Images the editor uploaded this session: removed again before saving, they are never referenced.
+        $uploaded = $data['uploaded_images'] ?? [];
+        unset($data['tags'], $data['publish_at'], $data['uploaded_images']);
+
+        $bodyImages = $this->images->urlsIn($article->body);
 
         if (! $article->exists || (isset($data['slug']) && $data['slug'] !== $article->slug)) {
             $data['slug'] = $this->uniqueSlug($data['slug'] ?? $data['title'] ?? $article->title, $article->id);
@@ -48,7 +52,7 @@ class ArticleWriter
             $data['published_at'] = null;
         }
 
-        return DB::transaction(function () use ($article, $data, $tags) {
+        $saved = DB::transaction(function () use ($article, $data, $tags) {
             $article->fill($data)->save();
 
             if (is_array($tags)) {
@@ -59,6 +63,11 @@ class ArticleWriter
 
             return $article;
         });
+
+        // Anything dropped from the body (or uploaded and then removed) and used nowhere else.
+        $this->images->purgeUnused([...$bodyImages, ...$uploaded]);
+
+        return $saved;
     }
 
     /**

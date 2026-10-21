@@ -7,8 +7,10 @@ import SidebarSection from './sidebar-section';
 
 export default function FeaturedImageSection({
     form,
+    onUploaded,
 }: {
     form: ArticleFormState;
+    onUploaded?: (url: string) => void;
 }) {
     return (
         <SidebarSection title="Featured image">
@@ -16,6 +18,7 @@ export default function FeaturedImageSection({
                 <CloudinaryImageUpload
                     value={form.data.featured_image}
                     onChange={(url) => form.setData('featured_image', url)}
+                    onUploaded={onUploaded}
                     aspectHint="16:9"
                     disabled={form.processing}
                 />
