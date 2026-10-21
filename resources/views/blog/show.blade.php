@@ -90,7 +90,7 @@
                     loading="eager" fetchpriority="high" decoding="async"
                     class="block aspect-video w-full bg-soft object-cover">
                 @if ($article->featured_image_caption)
-                    <figcaption class="mt-2 px-[var(--gutter)] font-mono text-xs leading-relaxed text-muted md:px-0">{{ $article->featured_image_caption }}</figcaption>
+                    <figcaption class="mt-2 px-[var(--gutter)] text-center font-mono text-xs leading-relaxed text-muted md:px-0">{{ $article->featured_image_caption }}</figcaption>
                 @endif
             </figure>
         @endif
