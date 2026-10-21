@@ -696,6 +696,20 @@ interface RichTextEditorProps {
     onImageUploaded?: (url: string) => void;
 }
 
+function toImageValues(attrs: Record<string, unknown>): ImageValues | null {
+    if (typeof attrs.src !== 'string' || !attrs.src) {
+        return null;
+    }
+
+    return {
+        src: attrs.src,
+        alt: typeof attrs.alt === 'string' ? attrs.alt : '',
+        caption: typeof attrs.caption === 'string' ? attrs.caption : '',
+        width: typeof attrs.width === 'number' ? attrs.width : null,
+        height: typeof attrs.height === 'number' ? attrs.height : null,
+    };
+}
+
 export default function RichTextEditor({
     value,
     onChange,
@@ -706,9 +720,12 @@ export default function RichTextEditor({
     onImageUploaded,
 }: RichTextEditorProps) {
     // null = closed; 'insert' adds a new image, 'edit' changes the selected one.
-    const [imageDialog, setImageDialog] = useState<'insert' | 'edit' | null>(
-        null,
-    );
+    // The image's values are captured when the dialog opens, so edit mode never
+    // depends on the editor selection still being intact at render time.
+    const [imageDialog, setImageDialog] = useState<{
+        mode: 'insert' | 'edit';
+        initial: ImageValues | null;
+    } | null>(null);
 
     const editor = useEditor({
         autofocus: autoFocus ? 'end' : false,
@@ -748,7 +765,10 @@ export default function RichTextEditor({
                         NodeSelection.create(view.state.doc, nodePos),
                     ),
                 );
-                setImageDialog('edit');
+                setImageDialog({
+                    mode: 'edit',
+                    initial: toImageValues(node.attrs),
+                });
 
                 return true;
             },
@@ -762,18 +782,15 @@ export default function RichTextEditor({
         return null;
     }
 
-    const selectedImage = editor.isActive('image')
-        ? (editor.getAttributes('image') as {
-              src?: string;
-              alt?: string | null;
-              caption?: string | null;
-              width?: number | null;
-              height?: number | null;
-          })
-        : null;
-
     function openImage() {
-        setImageDialog(editor?.isActive('image') ? 'edit' : 'insert');
+        setImageDialog(
+            editor?.isActive('image')
+                ? {
+                      mode: 'edit',
+                      initial: toImageValues(editor.getAttributes('image')),
+                  }
+                : { mode: 'insert', initial: null },
+        );
     }
 
     function closeImage() {
@@ -790,7 +807,7 @@ export default function RichTextEditor({
             height: values.height,
         };
 
-        if (imageDialog === 'edit') {
+        if (imageDialog?.mode === 'edit') {
             editor?.chain().focus().updateAttributes('image', attrs).run();
         } else {
             editor
@@ -831,7 +848,12 @@ export default function RichTextEditor({
                     type="button"
                     onMouseDown={(e) => {
                         e.preventDefault();
-                        setImageDialog('edit');
+                        setImageDialog({
+                            mode: 'edit',
+                            initial: toImageValues(
+                                editor.getAttributes('image'),
+                            ),
+                        });
                     }}
                     className="rounded px-2 py-1 hover:bg-muted"
                 >
@@ -855,17 +877,7 @@ export default function RichTextEditor({
             </div>
             {imageDialog && (
                 <ImageDialog
-                    initial={
-                        imageDialog === 'edit' && selectedImage?.src
-                            ? {
-                                  src: selectedImage.src,
-                                  alt: selectedImage.alt ?? '',
-                                  caption: selectedImage.caption ?? '',
-                                  width: selectedImage.width ?? null,
-                                  height: selectedImage.height ?? null,
-                              }
-                            : null
-                    }
+                    initial={imageDialog.initial}
                     onSubmit={applyImage}
                     onRemove={removeImage}
                     onClose={closeImage}

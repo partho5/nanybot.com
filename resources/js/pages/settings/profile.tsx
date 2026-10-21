@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/app-layout';
 import SettingsLayout from '@/layouts/settings/layout';
 import { edit } from '@/routes/profile';
+import { edit as editAuthor } from '@/routes/admin/users';
 import { send } from '@/routes/verification';
 import type { BreadcrumbItem } from '@/types';
 
@@ -141,6 +142,20 @@ export default function Profile({
                             </>
                         )}
                     </Form>
+                </div>
+
+                <div className="space-y-6">
+                    <Heading
+                        variant="small"
+                        title="Public author profile"
+                        description="Headline, bio, avatar and social links shown on your articles"
+                    />
+
+                    <Button variant="outline" asChild>
+                        <Link href={editAuthor(auth.user.id)}>
+                            Edit author profile
+                        </Link>
+                    </Button>
                 </div>
 
                 <DeleteUser />

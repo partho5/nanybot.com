@@ -40,22 +40,22 @@ const footerNavItems: NavItem[] = [
 export function AppSidebar() {
     const { auth } = usePage().props;
 
+    const myProfile: NavItem = {
+        title: 'My profile',
+        href: editUser(auth.user.id),
+        icon: UserCircle,
+    };
+
     const mainNavItems: NavItem[] = auth.user.is_admin
         ? [
               { title: 'Articles', href: articles(), icon: FileText },
               { title: 'Categories', href: categories(), icon: FolderTree },
               { title: 'Tags', href: tags(), icon: Tags },
               { title: 'Authors', href: users(), icon: Users },
+              myProfile,
               { title: 'API Keys', href: apiKeys(), icon: KeyRound },
           ]
-        : [
-              { title: 'Articles', href: articles(), icon: FileText },
-              {
-                  title: 'My profile',
-                  href: editUser(auth.user.id),
-                  icon: UserCircle,
-              },
-          ];
+        : [{ title: 'Articles', href: articles(), icon: FileText }, myProfile];
 
     return (
         <Sidebar collapsible="icon" variant="inset">

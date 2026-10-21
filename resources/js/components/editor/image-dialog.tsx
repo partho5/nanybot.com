@@ -55,6 +55,8 @@ export default function ImageDialog({
     const [uploading, setUploading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [previewFailed, setPreviewFailed] = useState(false);
+    // Editing keeps the current image; replacing it is opt-in.
+    const [replacing, setReplacing] = useState(!editing);
 
     const url = src.trim();
 
@@ -116,7 +118,8 @@ export default function ImageDialog({
     return (
         <Dialog open onOpenChange={(open) => !open && onClose()}>
             <DialogContent
-                className="max-h-[calc(100svh-2rem)] overflow-y-auto"
+                // `dark` swaps in the dark tokens so text, inputs and buttons contrast with the black surface.
+                className="dark max-h-[calc(100svh-2rem)] overflow-y-auto border-white/15 bg-black text-foreground"
                 // Keep focus out of the editor until we are done, then hand it back.
                 onCloseAutoFocus={(e) => e.preventDefault()}
             >
@@ -126,7 +129,7 @@ export default function ImageDialog({
                     </DialogTitle>
                     <DialogDescription>
                         {editing
-                            ? 'Change the description, caption or replace the image.'
+                            ? 'Change the description or caption. Replace the image only if you need to.'
                             : 'Upload an image or paste its URL.'}
                     </DialogDescription>
                 </DialogHeader>
@@ -141,47 +144,69 @@ export default function ImageDialog({
                         />
                     )}
 
-                    <div className="grid gap-1.5">
-                        <Label>{editing ? 'Replace image' : 'Upload'}</Label>
-                        <div className="flex items-center gap-2">
-                            <input
-                                ref={fileRef}
-                                type="file"
-                                accept="image/*"
-                                className="sr-only"
-                                onChange={handleFile}
-                                disabled={uploading}
-                                tabIndex={-1}
-                            />
-                            <Button
-                                type="button"
-                                variant="outline"
-                                size="sm"
-                                disabled={uploading}
-                                onClick={() => fileRef.current?.click()}
-                            >
-                                {uploading ? 'Uploading…' : 'Choose file'}
-                            </Button>
-                            <span className="truncate text-xs text-muted-foreground">
-                                {fileName || 'No file chosen'}
-                            </span>
-                        </div>
-                        {error && (
-                            <p className="text-xs text-destructive">{error}</p>
-                        )}
-                    </div>
+                    {!replacing && (
+                        <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            className="justify-self-start"
+                            onClick={() => setReplacing(true)}
+                        >
+                            Replace image
+                        </Button>
+                    )}
 
-                    <div className="grid gap-1.5">
-                        <Label htmlFor="img-url">Image URL</Label>
-                        <Input
-                            id="img-url"
-                            type="url"
-                            placeholder="https://…"
-                            value={src}
-                            onChange={(e) => changeUrl(e.target.value)}
-                            onKeyDown={(e) => e.key === 'Enter' && submit()}
-                        />
-                    </div>
+                    {replacing && (
+                        <>
+                            <div className="grid gap-1.5">
+                                <Label>Upload</Label>
+                                <div className="flex items-center gap-2">
+                                    <input
+                                        ref={fileRef}
+                                        type="file"
+                                        accept="image/*"
+                                        className="sr-only"
+                                        onChange={handleFile}
+                                        disabled={uploading}
+                                        tabIndex={-1}
+                                    />
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="sm"
+                                        disabled={uploading}
+                                        onClick={() => fileRef.current?.click()}
+                                    >
+                                        {uploading
+                                            ? 'Uploading…'
+                                            : 'Choose file'}
+                                    </Button>
+                                    <span className="truncate text-xs text-muted-foreground">
+                                        {fileName || 'No file chosen'}
+                                    </span>
+                                </div>
+                                {error && (
+                                    <p className="text-xs text-destructive">
+                                        {error}
+                                    </p>
+                                )}
+                            </div>
+
+                            <div className="grid gap-1.5">
+                                <Label htmlFor="img-url">Image URL</Label>
+                                <Input
+                                    id="img-url"
+                                    type="url"
+                                    placeholder="https://…"
+                                    value={src}
+                                    onChange={(e) => changeUrl(e.target.value)}
+                                    onKeyDown={(e) =>
+                                        e.key === 'Enter' && submit()
+                                    }
+                                />
+                            </div>
+                        </>
+                    )}
 
                     <div className="grid gap-1.5">
                         <Label htmlFor="img-alt">Alt text</Label>
